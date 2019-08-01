@@ -1,0 +1,17 @@
+# 문제상황
+javax.servlet-api 에 있는 HttpRequest.isAsync메서드가 없다고 나온다.
+분명히 pom.xml 엔 똑바로 버전이 써있는데 자꾸 빌드 돌리면 없는 메서드라고 테스트가 깨진다.
+
+# 해결
+원하는 dependency 트래킹을 해본다.
+```
+mvn dependency:tree -Dverbose -Dincludes=javax.servlet
+```
+옵션을 이렇게 주면 트리형태로 물고들어가는 dependency 모두 구경이 가능함.
+
+oscache 가 2.X대의 javax.servlet-api 라이브러리를 물고 들어가는걸 알 수 있다.
+
+# 결과
+올바르게 컴파일 잘되서 해결~
+먼저 선언 된게 우선순위를 갖는 것!
+http://ars-codia.raphaelbauer.com/2014/03/maven-pro-tip-dependency-ordering-and.html
