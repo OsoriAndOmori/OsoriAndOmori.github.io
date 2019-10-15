@@ -9,7 +9,7 @@ public class Test{
 		return fetchModels()
 			.stream()
 			.filter(distinctByKey(Model::getId))
-			.findFirst();
+			.findAny();
 	}
 	
 	private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
@@ -18,7 +18,7 @@ public class Test{
 	}
 }
 ```
-대충 보면 리스트에서 중복된 id의 모델들을 제거하고, 그 중 첫번째 모델을 Optional 로 감싸 리턴하는 메서드입니다.
+대충 보면 리스트에서 중복된 id의 모델들을 제거하고, 그 중 모델 아무거나 Optional 로 감싸 리턴하는 메서드입니다.
 그런데 코드를 보면 이상한 느낌이 처음에 들었습니다.
 `distinctByKey 안에 있는 HashMap 을 계속 초기화 하다니 정상동작 하는거 맞아?`
 `ConcurrentHashMap` 으로 초기화 해야하는 것이 아닌가? 
@@ -31,6 +31,7 @@ filter() 안에는 true or false 를 리턴하는 Predicate 이 파라미터로 
 간단해 보이지만 처음에 이 사실을 받아들이는데 시간이 걸려서 이해하는데 좀 걸렸습니다. 
 
 결국 `t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;` 부분만이 처음에 생성된 map을 참조하여 들고 있고 계속 반복 되는 것이죠.
+함수형 프로그래밍 이라는것이 이런걸까요??
 
 -----------------------------------------
 
@@ -70,65 +71,69 @@ Stream stream = list.stream()
 아래는 java Stream 의 lazy evaluation 을 완벽하게 테스트해볼 수 있는 코드를 만들고 수정해보았습니다.
 #### 코드 3
 ```java
- @Test
- public void test() throws Exception {
-  List<Member> memberList = new ArrayList<>();
+@Slf4j
+public class Test {
+	@Test
+	public void test() throws Exception {
+		List<Member> memberList = new ArrayList<>();
 
-  //aa + 숫자로 모델만들어서 넣음
-  IntStream.range(13, 17)
-    .forEach(i -> {
-     memberList.add(new Member("aa" + i, i));
-    });
+		//aa + 숫자로 모델만들어서 넣음
+		IntStream.range(13, 17)
+				.forEach(i -> {
+					memberList.add(new Member("aa" + i, i));
+				});
 
-  //unknown + 숫자로 모델 만들어서 넣음
-  IntStream.range(10, 20)
-    .forEach(i -> {
-     memberList.add(new Member("unknown_" + i, i));
-    });
-  
-  Stream<Member> memberStream = memberList.stream().filter(distinctByKey(m -> m.getAge()));
-  System.out.println("NOT EXECUTE YET");
-  memberStream.forEach(System.out::println);
- }
- private <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-   System.out.println("Init Map");
-   Map<Object, Boolean> map = new HashMap<>();
-   return t -> {
-    System.out.println("Map Key set : " + map.keySet());
-    return map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
- };
-   
- public class Member {
-  private String name;
-  private long age;
+		//unknown + 숫자로 모델 만들어서 넣음
+		IntStream.range(10, 20)
+				.forEach(i -> {
+					memberList.add(new Member("unknown_" + i, i));
+				});
 
-  public Member(String name, long age) {
-   super();
-   this.name = name;
-   this.age = age;
-  }
+		Stream<Member> memberStream = memberList.stream().filter(distinctByKey(m -> m.getAge()));
+		System.out.println("NOT EXECUTE YET");
+		memberStream.forEach(System.out::println);
+	}
 
-  public String getName() {
-   return name;
-  }
+	private <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+		System.out.println("Init Map");
+		Map<Object, Boolean> map = new HashMap<>();
+		return t -> {
+			System.out.println("Map Key set : " + map.keySet());
+			return map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+		};
+	}
 
-  public void setName(String name) {
-   this.name = name;
-  }
+	public class Member {
+		private String name;
+		private long age;
 
-  public long getAge() {
-   return age;
-  }
+		public Member(String name, long age) {
+			super();
+			this.name = name;
+			this.age = age;
+		}
 
-  public void setAge(long age) {
-   this.age = age;
-  }
+		public String getName() {
+			return name;
+		}
 
-  @Override
-  public String toString() {
-   return "Member [name=" + name + ", age=" + age + "]";
-  }
- }
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public long getAge() {
+			return age;
+		}
+
+		public void setAge(long age) {
+			this.age = age;
+		}
+
+		@Override
+		public String toString() {
+			return "Member [name=" + name + ", age=" + age + "]";
+		}
+	}
 }
 ```
 output 을 한번 예측해보세요!
