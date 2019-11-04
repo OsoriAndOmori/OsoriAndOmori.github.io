@@ -1,10 +1,11 @@
+# 공부해야할 목록
 
-## (3)	Web Cache
-1. Varnish
+## 1.	Web Cache
+1. Varnish https://varnish-cache.org/
 
-## (4)	Apache vs Nginx
+## 2.	Apache vs Nginx
 1. vs Tomcat
-2. Controlling Header
+2. Controlling Headers
 3. httpd.conf : MaxClient(서버성능 테스트), Timeout ….
 4. Log configuration : access log, error log, worker log ….
 5. Static resource configuration
@@ -12,23 +13,21 @@
 7. workers.properties
 8. ajp protocol(by tomcat)
 
-## (5)	Tomcat
+## 3.	Tomcat
 2. web.xml
 3. servlet.xml
-4. sitemesh.xml
-5. jstl
-6. cache
+4. cache
  - local cache
  - server cache(remote cache)`
  - web cache
-7. resource 관리
+5. resource 관리
  - http://kwon37xi.egloos.com/4665590#15194060 
-8. spring MVC : mobile컴포넌트 참고
-9. spring security : mobile컴포넌트 참고 
-10. Log : 영역, format, log rotate, log level, log4j, nelo2
-11. Jdbc : source 참고
-12. dbcp2 : source 참고
-13. Mybatis
-14. Jpa
-15. Timeout
-16. etc
+6. spring MVC
+7. spring security
+8. Log : 영역, format, log rotate, log level, log4j
+9. Jdbc
+10. dbcp2
+11. Mybatis
+12. Jpa
+13. Timeout
+14. etc
