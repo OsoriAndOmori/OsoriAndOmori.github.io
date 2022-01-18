@@ -7,7 +7,7 @@
     - 어느정도는 이 감이 옳을 수도 있겠으나, 명확한 기준이 없어서 나중에는 `모든 Api 의 구API 화` 무섭
 - Api 모듈 새로만들어야할것 같음?
   - 새로운 서비스 나오면 기존 api에 우겨넣을까, 새로운 api 컴포넌트 만들까?
-  - 매번 비슷한 논의들. 이 고민하는 시간조차 아깝다. [team](https://oss.navercorp.com/sports/round-table/issues/1237), enjoy, [one](https://oss.navercorp.com/sports/round-table/issues/1185)
+  - 매번 비슷한 논의들. 이 고민하는 시간조차 아깝다.
 
 ### 2. 백엔드 MSA 구조로 가기로 했지만 우리는 MSA 라기엔 지금은 단순한 상태
 - inbound gateway : Loadbalancer ribbon, spring-cloud-gateway
