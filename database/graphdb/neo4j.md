@@ -1,0 +1,205 @@
+## 1. DB-Engines Ranking of Graph DBMS
+  - 22년 1월 기준. ranking 1위. enterprise 큰 돈 받고, 파는. 
+
+## 2. 특징
+  - 자바 기반의 그래프 DB로서, 임베딩 방식과 REST 방식을 지원한다. 
+  - jvm 상에서 돌기 때문에, 당연히 jvm 옵션들도 지원함. 주로 만지는 설정은 Heap memory, GC
+  - 트랜잭션을 지원하며, JTA(Java Transaction APIs)를 지원한다.
+  - 이중화를 통한 고가용성을 지원한다. ( Zookeeper 사용)=
+  - 백업/복구를 지원한다.
+  - gui 툴이 강력하다. Desktop App 도 있으며 브라우저를 Database IDE 로 사용 가능하다
+  - 몽고같은 알아서 샤딩 불가능. 모든 데이터가 단일 노드에 쓰인다. 읽기 전용 replica 를 따로 두어 성능을 보장한다.
+  - 장비 scale out 개념이 없음. 용량 부족시 scale up 으로만 해결 가능
+  - g의 이유로 정말 큰 빅데이터를 무한히 쌓으며 처리하는 플랫폼으로는 적합하지 않음. (제한이 필요함)
+  - 3.x대 버전은 jdk 1.8 사용, 4.x대 버전은 jdk 11 사용
+
+## 3. ecosystem
+- spring-boot : spring-data-neo4j : 넣고 빼고 jpa 느낌
+```
+public interface PersonRepository extends Neo4jRepository<Person, Long> {
+
+  Person findByName(String name);
+  List<Person> findByTeammatesName(String name);
+}
+
+@Node
+public class Person {
+
+  @Id @GeneratedValue private Long id;
+  private String name;
+
+  private Person() {
+    // Empty constructor required as of Neo4j API 2.0.5
+  };
+
+  @Relationship(type = "TEAMMATE")
+  public Set<Person> teammates;
+
+  public void worksWith(Person person) {
+    if (teammates == null) {
+      teammates = new HashSet<>();
+    }
+    teammates.add(person);
+  }
+}
+```
+- node : neo4j-driver
+
+## 4. 설정. 핵심 위주 
+- $NEO4J_HOME/conf/neo4j.conf 로 하나의 파일에서 모든 설정을 담당한다. neo4j.conf
+- 매우 직관적이고 주석 포함해 800줄밖에 되지 않으니 하나하나 읽어봐도 오래걸리지 않는다. 굳이 문서를 참고할 필요는 없다.
+- jvm heap memory
+```
+# heap initial, max 는 일반 was 설정과 같이 동일하게 설정하는 것이 좋음. 동적 변경은 OOM 발생 가능성 및 GC 가능성 증가
+dbms.memory.heap.initial_size=4g
+dbms.memory.heap.max_size=4g
+```
+- cache
+```
+# graph data, index data를 메모리에 로드하여 disk io를 줄이는 캐싱이다.
+# 일반적으로 disk io를 줄이기 위해, db 실행시 warm up을 통해 많은 양의 데이터를 memory에 상주시킨다.
+# jvm heap 메모리와 관련이 없고 Native Memory 영역, OS로부터 직접 할당받는 영역으로 알아서 사이즈는 동적으로 변한다. GC 가 영향을 미칠 수 없는 영역이다.
+dbms.memory.pagecache.size=40g
+
+# n 개의 Execution plans 를 캐시.
+# Execution plans 은 Cypher Query 를 구성하는 operator 의 트리구조를 의미함.
+# 결과를 캐싱하는건 아니고 plan tree 를 캐싱해서 실행을 조금더 빠르게 한다는 의미로 생각하면 됨.
+dbms.query_cache_size=1000
+```
+- neo4j-admin memrec 커멘드를 이용하여 메모리 설정 추천을 받을 수 있다
+- Network connector configuration 관련
+```
+# 따로 설정을 하지 않는다면, neo4j 는 로컬에서 접속만 가능한 상태다.
+# 아래 설정을 변경해 줌으로서 외부에서 remote 로 붙을 수 있게 됨.
+# 받은 서버에 neo4j 설치 이후 아래 설정을 변경해서, 
+dbms.default_listen_address=0.0.0.0
+
+# ip 나 dns를 셋팅해서 사용자 접근 받을 수 있게한다고 되어있는데. 사실 좀 애매함. 
+# 여러대 설치하느라 ip 자동 입력을 위해 shell 스크립트 사용
+# neo4j 구동시 shell script 사용하고 싶으면 $NEO4J_HOME/bin/neo4j start --expand-commands 명령어 붙여서 실행해야함
+dbms.default_advertised_address=$(hostname -I)
+
+## 접근하기위해 사용할 수 있는 protocol 설정. Database IDE 에선 bolt 로 붙는다.
+dbms.connector.bolt.enabled=true
+dbms.connector.http.enabled=true
+dbms.connector.https.enabled=false
+```
+## 5. 실 서비스에서 활용하기 위한 내용
+- cluster : enterprise 버전에만 존재함
+  - neo4j 는 샤딩을 지원하지 않음. graph database 와 샤딩은 trade off 관계 by Neo4j 개발자.
+  - 구현을 할 수 있지만 속도 문제 등 다양한 문제를 고려할 떄, 어렵다 판단해서 neo4j 에서는 활용하지 않음.
+  - 모든 데이터가 단일 노드에 들어있기 때문에, read / write 성능, 장애 발생시 failover 에 대한 보장이 필요했다.
+  - core 숫자 = 2N + 1 개를 유지하면 N번의 failover 가 가능함. raft 알고리즘으로 core 중 리더를 선출하고 데이터를 받으며 서로 복제하며 sync를 맞춘다.
+  - 3개 중 어디로 데이터 넣어도 write 가능
+  - 클러스터 구성 절차
+    1. core 를 먼저 배포
+    2. read-replica 는 core 가 어떤 서버인지 설정 뒤 붙이면 자동으로 cluster에 투입된다.
+    3. 상황에 따라 read-replica 증설할 것.
+```
+# Database mode
+# Allowed values:
+# CORE - Core member of the cluster, part of the consensus quorum.
+# READ_REPLICA - Read replica in the cluster, an eventually-consistent read-only instance of the database.
+# To operate this Neo4j instance in Causal Clustering mode as a core member, uncomment this line:
+dbms.mode=CORE
+
+# Expected number of Core servers in the cluster at formation
+causal_clustering.minimum_core_cluster_size_at_formation=3
+
+# Minimum expected number of Core servers in the cluster at runtime.
+causal_clustering.minimum_core_cluster_size_at_runtime=3
+
+# A comma-separated list of the address and port for which to reach all other members of the cluster. It must be in the
+# host:port format. For each machine in the cluster, the address will usually be the public ip address of that machine.
+# The port will be the value used in the setting "causal_clustering.discovery_listen_address".
+# 최초로 통신할 코어들 ip를 투입한다. 운영중 추가하는 core instance 는 운영중 추가해도 됨.
+causal_clustering.initial_discovery_members=10.106.163.198:5000,10.106.156.73:5000,10.106.221.226:5002
+```
+```
+# READ_REPLICA - Read replica in the cluster, an eventually-consistent read-only instance of the database.
+dbms.mode=READ_REPLICA
+causal_clustering.minimum_core_cluster_size_at_formation=3
+causal_clustering.minimum_core_cluster_size_at_runtime=3
+
+# 여기엔 core instance ip 만 작성해야함
+causal_clustering.initial_discovery_members=10.106.163.198:5000,10.106.156.73:5000,10.106.221.226:5002
+```
+- fabric           
+  - 여러 neo4j cluster 로 routing 해주는 개념.
+  - neo4j 에서는 sharding 이라고 소개를 하긴 하지만, 사실은 개발자에의해 논리적으로 나눠진 다른 datasource 간 Routing 이라고 보는것이 맞고, elastic 같은 것 처럼 cluster node 추가, shard rebalancing 같은 기능은 없어서 진정한 의미의 데이터 sharding 이라고 하긴 어렵다.
+  - 서로 관계 짓지 않고, 별도의 데이터로 저장하여 UNION 하는 방식을 지원하나, 개발복잡도가 높아질 것으로 사료됨. 사용성이 떨어지는 것으로 보임.
+  - mysql 은 다른 database 끼리 join 이나 쿼리를 동시에 처리할 순 없지만, 아래와 같은 쿼리로 함께 데이터 가져오는 것은 가능하다
+```
+# neo4j.conf Fabric config 
+fabric.database.name=fabric
+
+fabric.graph.0.uri=neo4j://localhost:7687
+fabric.graph.0.database=neo4j
+fabric.graph.0.name=neo4j
+
+fabric.graph.1.uri=neo4j://localhost:7687
+fabric.graph.1.database=payments
+fabric.graph.1.name=payments
+```
+```
+# u:User 2명, a:Address,  s:SSN 만들고 각각 [HAS_ADDRESS], [HAS_SSN] 로 연결
+USE fabric.neo4j;
+CREATE (u:User{uid:1234,name:"Andy"});
+CREATE (u:User{uid:7890});
+CREATE (a:Address{street:"2985 Finwood Dr",city:"Freehold",state:"NJ"});
+CREATE (s:SSN{num:"321-7654-098"});
+
+MATCH (u:User),(a:Address)
+WHERE u.uid=1234 AND a.street="2985 Finwood Dr"
+CREATE (u)-[:HAS_ADDRESS]->(a);
+
+MATCH (u:User),(s:SSN)
+WHERE u.uid=1234 AND s.num="321-7654-098"
+CREATE (u)-[:HAS_SSN]->(s);
+
+# fabric payment db 에 노드 3개 만들고, transaction 이어붙임
+USE fabric.payment;
+CREATE (u:User{uid:1234});
+CREATE (t:Transaction{tid:"t001",amt:10,vendor:"amc"});
+CREATE (t:Transaction{tid:"t002",amt:5,currency:"USD",vendor:"strbcks"});
+
+MATCH (u:User),(t:Transaction)
+WHERE u.uid=1234
+CREATE (u)-[:HAS_TRANSACTION]->(t);
+
+# fabric 활용한 query 샘플
+CALL{
+	USE fabric.neo4j
+	MATCH (u:User)-[:HAS_SSN]->(s:SSN)
+	RETURN u.uid as userId, u.name as uname, s.num as ssn
+}
+CALL {
+	USE fabric.payments
+    WITH userId
+    MATCH (u:User)-[:HAS_TRANSACTION]->(t:Transaction)
+    WHERE u.uid = userId
+    RETURN t.tid as transactionID, t.amt as Amount,t.vendor as Vendor
+}
+RETURN uname,ssn,transactionID,Amount,Vendor
+```
+- monitoring
+```
+# prometeous 로 neo4j merics export 가 가능함 관련 설정
+# prometeous 알아서 설치 후, 구동 시킨 뒤
+metrics.prometheus.enabled=true
+metrics.prometheus.endpoint=localhost:2004
+```
+- 장비 가용량 계산
+  - 노드 프로퍼티는 5개, 관계는 2개씩,
+  - 노드하나는 15B, 관계하나는 34B, 프로퍼티하나는 41B 라 계산하면 대충 나옴.
+  - ex). 4억 개 노드, 2억개의 관계 = 150g
+- 유지보수 입장에서, 버전업
+  - 운영중 db 버전업하는 사례가 많지는 않지만 치명적인 오류가 있을수도 있으니....
+  - 체크리스트 다 체크하고
+  - 클러스터 전부 내리고 업데이트하고 올리기.
+  - cluster 를 사용할 경우 순단없이 하나씩 업데이트하면 되나, 개발자가 직접 메뉴얼 보며 진행해야함.
+## 6. 비용
+- 싯가 : 구글링해서 본 가격은 연 7000만원 정도이나, 서비스 사이즈 따라에 다르기 떄문에 정확히는 문의해보아야함. 연 1억이라 생각하고 있으면 될 듯.
+- ongdb : neo4j enterprise 를 오픈소스화 하여 무료로 풀린 graph db. 
+## 7. 그 외 읽어볼 내용
+- docker & kubernetes
