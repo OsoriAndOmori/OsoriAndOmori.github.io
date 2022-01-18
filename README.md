@@ -24,6 +24,7 @@ Today I Learned
 
 #### etc
 - Varnish (server side cache)
+- 남들과 차별화 된 나의 강점. 정리, 빠른 프로토타입 
 
 #### Devops
 - maven
