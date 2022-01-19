@@ -57,7 +57,7 @@ skywhite15@korea.ac.kr / 010-7332-6511
 - [2019] 네이버 D2 FEST 캠퍼스 핵데이 문제 [출제자 & 면접관](https://github.com/D2CampusFest/7th#5-%EA%B2%8C%EC%9E%84-%EB%AF%B8%EB%8B%88%EB%A7%B5-%EB%A6%AC%ED%94%8C%EB%A0%88%EC%9D%B4replay-%EB%AA%A8%EB%93%88)
 - 상위 조직 내 주니어 개발자간 커뮤니케이션 리딩
 
-## 최근 관심있게 보고 있는 기술
+## [최근 관심있게 보고 있는 기술]
 - [istio + envoy](https://istio.io/) : 인프라 관점의 MSA
 - 라즈베리파이 클러스터에 쿠버네티스 환경 구축
 - 라즈베리파이에 온습도 센서를 붙이고, 집의 온습도 자동화를 위한 방법 연구
