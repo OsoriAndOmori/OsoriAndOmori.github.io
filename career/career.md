@@ -50,12 +50,12 @@ skywhite15@korea.ac.kr / 010-7332-6511
   - [2021.12] rabbitmq + php 방식의 사용자 로그 수집을 elk 방식으로 전환
 
 ### 조직 내 역할
-- 상위 조직 기술 블로그에 2달에 1건 이상 tech 글 공유
-- 상위 조직 내 주니어 개발자간 커뮤니케이션 리딩
+- 상위 조직 기술 블로그에 [2달에 1건 이상 tech 글 공유](https://github.com/OsoriAndOmori/book-shelf)
 - 중소 규모 프로젝트 매니져이자 개발자
 - [2017 ~ 2022] 팀 내 최다 코드리뷰 타이틀 유지
 - [2019 ~ 2022] 팀 내 최장수 회식/각종 이벤트 담당
-- [2019] 네이버 D2 캠퍼스 핵데이 문제 출제자 & 면접관
+- [2019] 네이버 D2 FEST 캠퍼스 핵데이 문제 [출제자 & 면접관](https://github.com/D2CampusFest/7th#5-%EA%B2%8C%EC%9E%84-%EB%AF%B8%EB%8B%88%EB%A7%B5-%EB%A6%AC%ED%94%8C%EB%A0%88%EC%9D%B4replay-%EB%AA%A8%EB%93%88)
+- 상위 조직 내 주니어 개발자간 커뮤니케이션 리딩
 
 ## 최근 관심있게 보고 있는 기술
 - [istio + envoy](https://istio.io/) : 인프라 관점의 MSA
