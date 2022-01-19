@@ -22,17 +22,24 @@ skywhite15@korea.ac.kr / 010-7332-6511
 
 ## [보유기술]
 - SPRING (MVC / Batch / CLOUD)
-- JAVA Performance Tuning / GC Tuning
+- Pinpoint 기반 Serverside Performance Tuning / GC Tuning
 - React + recoil, react-three-fiber 를 통한 3d graphics 프로그래밍
 - Server Performance Test
 - Cache Server (Varnish)
+- RDB(mysql), No Sql(Elasticsearch), graph db(neo4j) 운영
 
 ## [주요 경력 및 수행 업무]
 ### 서비스 출시 및 개편
   - 2016.6 리우올림픽
+    - 오늘의 리우라는 운영에서 관리툴에 pick 하고 편집한 컨텐츠를 모바일 서비스화면에 노출하는 작업을 맡았습니다.
+  - 2017.5 e스포츠 LoL 엔드 개편
+    - LoL을 5년이상 한 경험을 이용해 단순 score 만 보여주던 화면에서, 실제 중계화면보다 정보가 넘치는 실시간 화면 구축을 했습니다.
   - 2018.1 평창올림픽
+    - 올림픽의 코어 컨텐츠라고 할 수 있는 일정 페이지를 담당했습니다. 미묘하게 다른 종목별 영역을 복잡도 높지않고, 빠르게 그릴 수 있도록 고민했던 시간입니다.
   - 2021.3 네이버 스포츠 경기 페이지 야구 pts 개편
+    - KBO 투구 pts 데이터 (초기 가속도, 속도, 위치) 를 받아 화면에 공이 날아오는 것을 그리는 pitch tracking system 을 구현했습니다.
   - 2021.6 도쿄올림픽
+    - MSA 기반 올림픽 Api 마련
 ### 서비스 구조개선
   - 모놀리식 서비스 구조 MSA 구조 개선
   - 물리장비 helm chart 기반 쿠버네티스 application 이동
