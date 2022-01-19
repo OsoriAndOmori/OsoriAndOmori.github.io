@@ -3,7 +3,7 @@
 - skywhite15@korea.ac.kr / 010-7332-6511
 
 ## [About Me]
-- Java & Spring 개발자이며, 게임과 배드민턴을 즐기는 두 아이의 아빠 입니다. 매사에 즐거움을 중요시 여기는 지라, 좋아하는 컴퓨터를 직업으로 삼게되었고, 기계적 사고를 좋아합니다. 활발한 성격으로 협업 운영팀과도 술을 마시러 다니는 특이한 개발자이며, 팀 내 **기술부채 정리** (작게는 코드 리펙토링, 크게는 모듈 삭제 및 변경) 하는 것을 즐겨합니다. **매년 코드 생산하는 양보다, 코드 지우는 양이 2배정도 많습니다.** 팀원들의 러닝코스트를 줄일 수 있는 방법을 고민하며 개발을 합니다.
+- Java & Spring 개발자이며, 게임과 배드민턴을 즐기는 두 아이의 아빠 입니다. **일 평균 PV 7,000만** 서비스에서 API / Batch / 화면 / 로그수집 개발 및 인프라 구축 등을 해왔습니다. 매사에 즐거움을 중요시 여기는 지라, 좋아하는 컴퓨터를 벗으로 삼아 직업을 얻게 되었습니다. 활발한 성격으로 협업 운영팀과도 술을 마시러 다니는 특이한 개발자이며, 팀 내 **기술부채 정리** (작게는 코드 리펙토링, 크게는 모듈 삭제 및 변경) 하는 것을 즐겨합니다. **매년 코드 생산하는 양보다, 코드 지우는 양이 2배정도 많습니다.** 팀원들의 러닝코스트를 줄일 수 있는 방법을 고민하며 개발을 합니다.
 
 ## [경력]
 ### NAVER (2015. 12. 21 ~ 현재)
@@ -30,9 +30,9 @@
 
 ## [주요 경력 및 수행 업무]
 ### 신규 서비스 출시 경험
-  - 도쿄올림픽 이벤트 페이지 peek 치 기준 19.7 만 RPS (2021. 6)
-    - MSA 기반 사용자 참여 컨텐츠 올림픽 예측고사 페이지 개발
-    - MSA 기반 olympic api application 구축 및 api-gateway 운영.
+  - 도쿄올림픽 이벤트 페이지 (2021. 6)
+    - MSA 기반 사용자 참여 컨텐츠 올림픽 예측고사 Api 및 관리툴 개발
+    - MSA 기반 olympic api application 구축 및 api-gateway 운영. **peek 치 기준 19.7 만 RPS**
   - 평창올림픽 이벤트 페이지 (2018. 1)
     - 올림픽 일정 페이지 개발
     - 올림픽 Serverside 성능테스트  
@@ -45,14 +45,14 @@
     - 사내 hack day 우수상 수상
 
 ### 서비스 구조개선
-  - Rabbitmq, php 방식의 사용자 대용량 로그 수집을 ELK 방식으로 전환. peek 치 기준 1000 RPS (2021. 12)
-  - nginx proxy cache 기반 static-data server 구축 (2021.10)
-    - Api fallback 및 트래픽 분산이 목적. Api 호출 결과물을 정적 파일 로 저장해놓고 서빙
-  - 스포츠 경기 페이지 야구 pts 개편 (2021.3)
-    - react-three-fiber 기반 pitch tracking system 3D그래픽스 프로그래밍
-  - 모놀리식 서비스 구조를 MSA 구조로 개선 (2020.1 ~ 현재)
-    - Api-gw 및 전체 Api 도메인 설계 담당
-  - 쿠버네티스 적용(helm chart 기준) (2019.2 ~ 현재)
+  - Rabbit MQ, php 방식의 사용자 대용량 로그 수집을 ELK 방식으로 전환. **일 평균 1,000 RPS** (2021. 12)
+  - nginx proxy cache 기반 static-data server 구축 (2021. 10)
+    - Api 호출 결과물을 파일로 저장해놓고 서빙.
+  - 스포츠 경기 페이지 중계탭 [야구 pts 개편](https://github.com/OsoriAndOmori/book-shelf/blob/master/programming/react/react-three-fiber%20%EB%A1%9C%20pts%20%EB%A7%8C%EB%93%A4%EA%B8%B0.md) (2021. 3)
+    - react-three-fiber 기반 pitch tracking system 3D 그래픽스 프로그래밍
+  - 모놀리식 서비스 구조를 MSA 구조로 개선 (2020. 1 ~ 현재)
+    - spring cloud 기반 Api-gw 및 전체 Api 도메인 설계 담당
+  - 쿠버네티스 적용(helm chart 기준) (2019. 2 ~ 현재)
   - **[프로젝트 리딩]** e스포츠 LoL 중계페이지 개편 (2017. 5)
     - billboard.js, handlebars 기반 실시간 경기 통계 페이지 개발
  
