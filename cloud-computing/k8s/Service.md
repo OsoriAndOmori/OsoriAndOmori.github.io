@@ -1,0 +1,36 @@
+# 클라이언트에게 서비스 노출 하는 방법 : Service
+## 설정 자체는 아래의 형태로 진행함
+1. ClusterIP
+- 기본값
+- 클러스터 내부에서만 통신가능한 ip 를 할당해줌.
+- 기본 10.xx 식으로 internal ip 형태로 잡아줌. MSA 의 백엔드 컴포넌트면 요걸 사용해도 무방.
+
+2. NodePort
+- master + node 의 특정포트를 통해 pod 와 연결지음
+- 30000 ~ 32.... 몇까지 사용할 수 있는데, 모양새가 안나옴 ㅎㅎ
+- 사용처에서 {node ip} : {포트번호} 로 사용해야하는데, DNS 등록하기도 좀 쉽지않은환경 일반 웹어플리케이션을 30000 어쩌구 붙이면서 사용하는것도 이상함...
+
+3. LoadBalancer
+- 요걸로 만들면 External ip 가 할당이 되어 외부 접속이 가능함.
+- 미리 pool 을 할당해놓고 받는 식이라 별도로 설치해서 pool 설정을 해둬야함.
+- 클라우드 플랫폼에서 지원해줘야함..
+
+4. Ingress : Service 와는 다른 구성
+- istio ingress GW의 근간.
+- 서로다른 host 나 url pattern 에 따라 원하는 Service 로 떨궈줌.
+- <img width="751" alt="image" src="https://user-images.githubusercontent.com/22016317/174520580-16cb2240-8caf-4a97-868f-ab97710bed16.png">
+
+
+## 근데 사실 더 중요한건 kube-proxy. 실체임.
+- 실제 위 Service 설정을 구현함
+- 모드는 총 2가지가 있다고 보면됨.
+  - iptables : default
+    - Service API 요청시에 iptable rule 을 master, node 1~3 에 iptable 에 등록해서 클라이언트와 Pod를 연결해줌
+    - NodePort 로 만들시엔, 해당 포트를 열고 Listen 하고 있음. 마치 nginx 처럼.
+  - IPVS : 리눅스 커널 loadbalancing 
+    - 별도 ipvs 지원 모듈을 모든 노드를 오픈하고 사용할 수 있음.
+
+#### 참고
+- [k8s docs](https://kubernetes.io/ko/docs/concepts/services-networking/_print/)
+- [조대협 블로그](https://bcho.tistory.com/1262)
+- [k8s Service 강좌](https://www.youtube.com/watch?v=ilQSgu8qt0o)
