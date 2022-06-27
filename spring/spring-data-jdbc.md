@@ -4,5 +4,3 @@
 - spring data jdbc 는 아직 delete 에 관해서는 derived Query 를 제공하지 않음
 entity 방식으로 지우는게 아니면 @Query @Modify 써서 native 쿼리를 실행해야함.
 배치는 orm 보단 쿼리를 사용하는게 효과적인것 같음..... jdbcTemplate 이나 쓰자
-
-- 
