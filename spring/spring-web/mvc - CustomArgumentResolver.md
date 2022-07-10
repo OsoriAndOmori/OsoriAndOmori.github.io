@@ -1,6 +1,3 @@
-일단 아래 읽어보시면 아실듯합니다.
-https://jekalmin.tistory.com/entry/%EC%BB%A4%EC%8A%A4%ED%85%80-ArgumentResolver-%EB%93%B1%EB%A1%9D%ED%95%98%EA%B8%B0
-
 ## 문제 의식
 - 컨트롤러에 들어오고, request 에서 뭔가를 꺼내는 기존 방식은 불편하고 필요없는 코드를 너무 많은곳에 양산하게됨. 
 - 그냥 컨트롤러 맨 앞부터 파라미터로 받으면 좋겠음. request에서 뭔가를 꺼내서 맵핑하는게 싫음
