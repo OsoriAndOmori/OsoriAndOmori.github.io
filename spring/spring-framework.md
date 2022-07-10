@@ -19,12 +19,16 @@
 - 관점 지향형 프로그래밍. 비즈니스 로직에 집중을 하고, 그 외에는 별도의 방법으로 로직 살을 붙이자.
 - 공통된 반복로직을 제거하는데 용이하게 쓸 수 있음.
 - AOP 를 구현하는 방법은 3가지정도 원래 있음
-  - 컴파일 단계
-  - 바이트코드 조작단계
-  - 프록시 패턴 : Spring 에서 요걸 씀
-    - 프록시 패턴에대해 적지 않을 수 없음.
-    - 
-- `@Aspect`
+  - 컴파일 단계 : .class 만들 때, 조작해서 로직 집어넣음 
+  - 바이트코드 조작단계 : .class 파일 만들고 메모리에 올릴때 조작도 가능
+  - [프록시 패턴](https://refactoring.guru/design-patterns/proxy) : Spring 에서 요걸 씀. 정상적으로 빌드하고 패턴을 이용해 프록시 AOP 도입
+    - 프록시 패턴에 대해 적지 않을 수 없음.
+    - 기존 코드를 건드리지 않고 새 로직을 추가하기
+    - [java code example](https://refactoring.guru/design-patterns/proxy/java/example)
+    - 예를 보면 Proxy객체는 공통 interface 상속을 하고, 원래 것을 멤버변수로 들고 있음.
+      - 실행시 Proxy 객체를 주입해서 사용하면 추가된 로직 + 원래 로직 그대로 실행할 수 있어서 동작 추가 가능.
+      - 리펙토링에 적극 활용해도 좋음.
+- `@Aspect` 샘플코드는 널리고 깔렸으니 생략
 
 ## [예제로 배우는 스프링 입문](https://www.inflearn.com/course/spring_revised_edition/dashboard)
 - 나는 어디까지 알고 싶은건지부터 정해야함
