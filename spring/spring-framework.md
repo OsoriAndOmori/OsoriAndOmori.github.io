@@ -30,6 +30,12 @@
       - 리펙토링에 적극 활용해도 좋음.
 - `@Aspect` 샘플코드는 널리고 깔렸으니 생략
 
+## PSA : Portable Service Abstraction
+- 추상화를 통해 
+- Controller
+- transactionManager
+- CacheManager
+
 ## [예제로 배우는 스프링 입문](https://www.inflearn.com/course/spring_revised_edition/dashboard)
 - 나는 어디까지 알고 싶은건지부터 정해야함
 - 대충 뭔지는 암 -> 중요한 개념들은 알고 개발은 개념 다 써서 할 수 있음 -> [가성비 안나오는 벽] -> **좀 깊게 알아서 컨트리뷰션 할 수 있는 정도** -> [넘사벽] -> 저자들 수준으로 다알아
