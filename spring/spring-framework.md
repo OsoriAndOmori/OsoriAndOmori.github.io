@@ -31,7 +31,7 @@
 - `@Aspect` 샘플코드는 널리고 깔렸으니 생략
 
 ## PSA : Portable Service Abstraction
-- 추상화를 통해 
+- 추상화를 통해 언제든 갈아낄 수 있게 한다.
 - Controller
 - transactionManager
 - CacheManager
