@@ -1,3 +1,11 @@
+---
+title: Spring-data-rest 간단한 정리
+author: OsoriAndOmori
+date: 2022-06-27 18:00:00 +0900
+categories: [Blogging, Spring]
+tags: [spring, spring-data, spring-data-rest]
+---
+
 ### spring-boot-starter-data-rest
 - spring-data-...가 하도 많아서 매우 햇갈림.
 - `spring-mvc` 기반
@@ -61,7 +69,7 @@ public class RadioChannelsEventHandler {
 spring.data.rest.base-path: /api
 ```
 - rest 응답결과에 default 로 `@Id` 가 노출이 안됨
-  - 설정으로 entity 마다 등록해줘야함. 
+  - 설정으로 entity 마다 등록해줘야함.
 ```java
 @Configuration
 public class RestConfiguration implements RepositoryRestConfigurer {

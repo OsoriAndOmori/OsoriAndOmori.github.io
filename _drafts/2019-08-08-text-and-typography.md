@@ -7,9 +7,9 @@ tags: [typography, love]
 math: true
 mermaid: true
 image:
-  path: /commons/devices-mockup.png
-  width: 800
-  height: 500
+  path: /assets/img/sky.jpg
+  width: 300
+  height: 300
   alt: Responsive rendering of Chirpy theme on multiple devices.
 ---
 

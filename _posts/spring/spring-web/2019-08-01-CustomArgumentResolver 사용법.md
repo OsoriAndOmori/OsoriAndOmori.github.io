@@ -1,5 +1,13 @@
+---
+title: CustomArgumentResolver 사용법
+author: OsoriAndOmori
+date: 2019-08-01 18:00:00 +0900
+categories: [Blogging, Spring]
+tags: [spring, spring-mvc]
+---
+
 ## 문제 의식
-- 컨트롤러에 들어오고, request 에서 뭔가를 꺼내는 기존 방식은 불편하고 필요없는 코드를 너무 많은곳에 양산하게됨. 
+- 컨트롤러에 들어오고, request 에서 뭔가를 꺼내는 기존 방식은 불편하고 필요없는 코드를 너무 많은곳에 양산하게됨.
 - 그냥 컨트롤러 맨 앞부터 파라미터로 받으면 좋겠음. request에서 뭔가를 꺼내서 맵핑하는게 싫음
 
 ## 설정 방법

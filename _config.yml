@@ -23,7 +23,7 @@ timezone:
 
 title: Osori Blog                          # the main title
 
-tagline: 오소리 오모리들   # it will display as the sub-title
+tagline: 오소리 오모리들의 <br>공유용 학습 블로그 & 개발 수첩  # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
   누군가에게 설명하지 못하면 아는 것이 아니다.
@@ -80,7 +80,7 @@ theme_mode: light  # [light|dark]
 img_cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar: /assets/img/ori.jpg
+avatar: /assets/img/turtle.png
 
 # boolean type, the global switch for ToC in posts.
 toc: true

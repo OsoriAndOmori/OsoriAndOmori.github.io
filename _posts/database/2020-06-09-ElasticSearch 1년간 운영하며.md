@@ -1,4 +1,12 @@
-## 결국 es 는 로깅 + 조회 용일뿐
+---
+title: ElasticSearch 1년간 운영하며
+author: OsoriAndOmori
+date: 2020-06-09 18:00:00 +0900
+categories: [Blogging, Spring]
+tags: [database, elasticsearch, sharding]
+---
+
+## 검색을 하지않는 이상, 결국 es 는 로깅 + 조회 용일뿐
 - 데이터 가공한걸 넣고 쓰는용으로는 맞지않다.
 - 가공은 다른곳에 저장하고, 순정 log로 보고 편하게 쌓고 보고싶을 떄 유용하다.
 
@@ -34,5 +42,5 @@
 ## 샤드 갯수 정리
 - 하나의 샤드는 가능하면 50g를 넘기지 않도록 구성한다.
 - 클러스터 전체 샤드가 1000개 이상 되면 맛이 간다고 봐도 될 것 같다.
-- 트래픽이 많은 index의 경우, node가 분산해서 데이터 쌓을 수 있게, shard 갯수 = cpu 코어 숫자 * 노드 수 (replica 0 일때) 
+- 트래픽이 많은 index의 경우, node가 분산해서 데이터 쌓을 수 있게, shard 갯수 = cpu 코어 숫자 * 노드 수 (replica 0 일때)
 - ex) 멀티쓰레드지원 쿼드 코어로 5개 노드가 주어지면,  2 * 4 * 5 = 40개가 이론상 빠르나.. index가 많아지면 조회시 cpu usage 가 그만큼 올라간다.

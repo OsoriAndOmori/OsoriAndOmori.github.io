@@ -1,10 +1,18 @@
+---
+title: Spring Framework 간단한 정리 - 알고도 다시 짚자
+author: OsoriAndOmori
+date: 2022-07-09 18:00:00 +0900
+categories: [Blogging, Spring]
+tags: [spring]
+---
+
 ## [스프링 프레임워크 레퍼런스](https://docs.spring.io/spring-framework/docs/current/reference/html/index.html)
 
 ## IoC : Inversion of Control
 - 제어의 역전
 - 객체의 생성과 소멸 제어를 원래는 작성자가 함. `new Instance`
 - 벗 스프링에서 `특수한 Annotation` 을 붙이거나, 직접 `@Bean` 등록된 객체들은 IoC Container = ApplicationContext 가 구동시 다 만들어 들고 있음.
-- 최초 Spring 구동시 등록하는 로깅이 잘 보임. 
+- 최초 Spring 구동시 등록하는 로깅이 잘 보임.
 - 그래서 너무 많은 Bean 을 만드는 상황이면 최초 구동속도가 느려짐...
 - 이렇게 만들어둔 Bean 들은 DI로 사용처에 주입이 된다.
 
@@ -19,7 +27,7 @@
 - 관점 지향형 프로그래밍. 비즈니스 로직에 집중을 하고, 그 외에는 별도의 방법으로 로직 살을 붙이자.
 - 공통된 반복로직을 제거하는데 용이하게 쓸 수 있음.
 - AOP 를 구현하는 방법은 3가지정도 원래 있음
-  - 컴파일 단계 : .class 만들 때, 조작해서 로직 집어넣음 
+  - 컴파일 단계 : .class 만들 때, 조작해서 로직 집어넣음
   - 바이트코드 조작단계 : .class 파일 만들고 메모리에 올릴때 조작도 가능
   - [프록시 패턴](https://refactoring.guru/design-patterns/proxy) : Spring 에서 요걸 씀. 정상적으로 빌드하고 패턴을 이용해 프록시 AOP 도입
     - 프록시 패턴에 대해 적지 않을 수 없음.

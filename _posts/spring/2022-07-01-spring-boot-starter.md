@@ -13,8 +13,8 @@ tags: [spring]
   - 이는 `@ConditionalOnClass` `@ConditionalOnBean` `@ConditionalOnWebApplication` `@ConditionalOnMissingBean` 등을 이용하여, boot 시작 때 설정값들을 선택적으로 bean 등록.
   - `@Bean` 으로 등록이 되면 사용자는 원하는 컴포넌트를 가이드대로 `@Autowired` 해서 사용하면 됨.
 - `spring-boot-starter` - `build.gradle` 을 보면 재밌음
-  - 사실상 모든 starter 들에 다 들어 있는 고정멤버. `api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-  `
+  - 사실상 모든 starter 들에 다 들어 있는 고정멤버. `api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))`
+
 ```groovy
 plugins {
 	id "org.springframework.boot.starter"
@@ -31,6 +31,7 @@ dependencies {
 	api("org.yaml:snakeyaml")
 }
 ```
+
 - `spring-boot`
   - `SpringApplication.java` 가 들어있는 boot 의 main
 - `autoconfigure`
