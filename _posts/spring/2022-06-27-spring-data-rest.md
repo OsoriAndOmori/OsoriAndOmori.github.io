@@ -18,6 +18,7 @@ implementation 'io.springfox:springfox-swagger2:3.0.0'
 implementation 'io.springfox:springfox-data-rest:3.0.0'
 implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 ```
+
 ```java
 @EnableSwagger2
 @Import(SpringDataRestConfiguration.class) //swagger 설정임.
@@ -43,10 +44,11 @@ public class AdminApplication extends WebMvcConfigurationSupport {
 		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
 	}
 }
-
 ```
+
 - `spring-mvc` 기반이기 떄문에 reactive 와 같이 쓸수 없음.
 - `@RepositoryRestResource` 전처리 후처리를 위해 EventHandler `@RepositoryEventHandler` 를 제공함.
+
 ```java
 @Slf4j
 @Component
@@ -62,14 +64,17 @@ public class RadioChannelsEventHandler {
         log.info("START Radio Channel Save");
     }
 }
-
 ```
+
 - property 설정으로 base-path 지정 가능
+
 ```groovy
 spring.data.rest.base-path: /api
 ```
+
 - rest 응답결과에 default 로 `@Id` 가 노출이 안됨
   - 설정으로 entity 마다 등록해줘야함.
+
 ```java
 @Configuration
 public class RestConfiguration implements RepositoryRestConfigurer {
