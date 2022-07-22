@@ -1,3 +1,11 @@
+---
+title: dbcp pool 설정에 관해서
+author: OsoriAndOmori
+date: 2022-01-26 18:00:00 +0900
+categories: [Blogging, Database]
+tags: [database, dbcp]
+---
+
 ## 메인DB mysql connection pool
 - mysql 뿐만아니라 모든 db는 db 쪽에서 `client connection pool`  설정을 갖는다.
 - 사용자가 아무리 많은 connection 맺을라고해도, 결국엔 `client connection pool` 이상을 넘지 못한다.
@@ -11,7 +19,7 @@
   - `컴포넌트 dbcp maxActive 의 합 <= mysql connection Pool 설정`
   - 무분별한 코드 복붙보다는 작은 컴포넌트는 max Active 값을 줄여서 미리 장애방지
 
-## 각각 컴포넌트의 톰캣 설정. 쓰레드 Pool 숫자와도 밸런스 맞추는것이 필요함.
+## 쓰레드 Pool 숫자와도 밸런스 맞추는것이 필요함.
 - tomcat thread 숫자는 10인데, connection pool 이 50인건 의미가 없음
 - `tomcat thread 숫자 >= dbcp` 가 바람직하나 그 차이가 큰 건 별로
 - `tomcat thread(2048) > dbcp maxActive(180)`
