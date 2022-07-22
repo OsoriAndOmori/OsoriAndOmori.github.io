@@ -5,7 +5,7 @@ theme: jekyll-theme-chirpy
 
 # Change the following value to '/PROJECT_NAME' ONLY IF your site type is GitHub Pages Project sites
 # and doesn't have a custom domain.
-baseurl: '/book-shelf'
+baseurl:
 
 # The language of the webpage › http://www.lingoes.net/en/translator/langcode.htm
 # If it has the same name as one of the files in folder `_data/locales`, the layout language will also be changed,
@@ -29,7 +29,7 @@ description: >-                        # used by seo meta and the atom feed
   누군가에게 설명하지 못하면 아는 것이 아니다.
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
-url: 'https://osoriandomori.github.io/book-shelf'
+url: 'https://osoriandomori.github.io'
 
 github:
   username: OsoriAndOmori             # change to your github username
@@ -92,14 +92,14 @@ comments:
     shortname: osori   # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
   # utterances settings › https://utteranc.es/
   utterances:
-    repo: OsoriAndOmori/book-shelf        # <gh-username>/<repo>
+    repo: OsoriAndOmori/OsoriAndOmori.github.io        # <gh-username>/<repo>
     issue_term: title  # < url | pathname | title | ...>
   # Giscus options › https://giscus.app
   giscus:
-    repo: OsoriAndOmori/book-shelf            # <gh-username>/<repo>
-    repo_id: MDEwOlJlcG9zaXRvcnkxNTczMDQ3MTA=
+    repo: OsoriAndOmori/OsoriAndOmori.github.io            # <gh-username>/<repo>
+    repo_id: R_kgDOHsur3A
     category: Announcements
-    category_id: DIC_kwDOCWBHhs4CQW0h
+    category_id: DIC_kwDOHsur3M4CQXkw
     mapping:          # optional, default to 'pathname'
     input_position:   # optional, default to 'bottom'
     lang:             # optional, default to the value of `site.lang`
