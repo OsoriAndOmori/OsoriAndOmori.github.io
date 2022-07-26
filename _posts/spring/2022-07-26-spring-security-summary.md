@@ -1,13 +1,13 @@
 ---
-title: Spring Security 기술 간단 요약
+title: Spring Security 기술 간단 요약 (~ing)
 author: OsoriAndOmori
 date: 2022-07-26 14:00:00 +0900
 categories: [Blogging, Spring]
 tags: [spring, spring-mvc, spring-security]
 ---
 
-> 이 게시물은 [백기선 - Spring Security](https://www.inflearn.com/course/백기선-스프링-시큐리티) 요약임
-> 모든 코드는 [OsoriAndOmori/playground-spring](https://github.com/OsoriAndOmori/playground-spring/tree/main/applicaion-web-mvc) 에 올려둠.
+> 이 게시물은 [백기선 - Spring Security](https://www.inflearn.com/course/백기선-스프링-시큐리티) 요약임 <br>
+> 모든 코드는 [OsoriAndOmori/playground-spring](https://github.com/OsoriAndOmori/playground-spring/tree/main/applicaion-web-mvc) 에 올려둠. <br>
 > 멋대로 만든 프로젝트 구조 이기 떄문에, 강좌 내용은 따라가나 구조는 절대 따라가지 않음..
 
 1. 스프링 시큐리티 연동
