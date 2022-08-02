@@ -28,6 +28,7 @@ tags: [react, threejs, react-three-fiber]
 ## 2. 일단 페이지 구조보단, 적용할 기술부터 파악했어야 했습니다.
 먼저 일반 `threejs` 와 `react-three-fiber`
 정육면체 하나가 `(0, 0, 0)` 에서 뱅글뱅글 돌고있는 동일한 스펙의 화면으로 비교를 해보겠습니다.
+
 ![1861dd80-b4d6-11eb-8615-3aebd7a4dc93](https://user-images.githubusercontent.com/22016317/149983060-eebba0a2-24b1-4609-80f1-9d85aafc0043.gif)ㅋ
 
 - Threejs
