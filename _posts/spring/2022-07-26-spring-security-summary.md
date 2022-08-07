@@ -106,3 +106,21 @@ public class Account {
 
 - **여기까지 새로운 문제**
   - 테스트는 매번 화면키고 해야 하는건가?
+
+## 5. Spring security test
+- 화면 키고 테스트하기 매우 귀찮음.
+- `@WithMockUser(username = "admin", roles = "ADMIN")` 같은걸 사용해서 유저 권한 체크 가능함
+
+```java
+    @Test
+    @Transactional
+    void login() throws Exception {
+        String username = "sky-test2";
+        String password = "sky-test2";
+
+        Account user = createUser(username, password);
+
+        mockMvc.perform(formLogin().user(user.getUsername()).password(password))
+                .andExpect(authenticated());
+    }
+```
