@@ -131,5 +131,10 @@ public class Account {
   - ThreadLocal 에서 SecurityContext 제공함.
   - ThreadLocal 은 한 쓰레드 내에서 공유하는 저장소라고 일단 생각 (메서드 파라미터로 안넘겨도 가져올 수 있는 데이터)
 ```java
-    SecurityContext.getContext().getAuthentication() 하면 해당 요청의 인증정보 꺼낼 수 있음.
+    SecurityContext.getContext().getAuthentication() //하면 해당 요청의 인증정보 꺼낼 수 있음.
 ```
+- Authentication 의 실제 구현체 UsernamePasswordAuthenticationToken 같은 클래스로 구현되어있고 폼로그인시 요걸 사용함.
+- AuthenticationManager
+  - SecurityContextHolder 가 Authentication 을 들고 있는거고 얘는 실제 인증을 담당하는 매니져임
+  - 내부에 `authenticate` 메서드 하나만 들고 있음.
+  - 실제 구현체는 `ProviderManager` 를 사용함. debuger 를 여기다 찍고 한번 보셈.
