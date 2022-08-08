@@ -124,3 +124,12 @@ public class Account {
                 .andExpect(authenticated());
     }
 ```
+
+## 6. Spring Security Architecture
+### 1. SecurityContextHolder 와 Authentication
+- SecurityContextHolder
+  - ThreadLocal 에서 SecurityContext 제공함.
+  - ThreadLocal 은 한 쓰레드 내에서 공유하는 저장소라고 일단 생각 (메서드 파라미터로 안넘겨도 가져올 수 있는 데이터)
+```java
+    SecurityContext.getContext().getAuthentication() 하면 해당 요청의 인증정보 꺼낼 수 있음.
+```
