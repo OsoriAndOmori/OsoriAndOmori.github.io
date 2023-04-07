@@ -1,5 +1,5 @@
 ---
-title: Google Cloud Platform 정리
+title: Google Cloud Platform GCP 정리
 author: OsoriAndOmori
 date: 2022-07-13 18:00:00 +0900
 categories: [Blogging, DevOps]
