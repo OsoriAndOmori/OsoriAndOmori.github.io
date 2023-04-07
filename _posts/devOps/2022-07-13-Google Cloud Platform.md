@@ -1,5 +1,5 @@
 ---
-title: Google Cloud Platform (정리 -ing)
+title: Google Cloud Platform 정리
 author: OsoriAndOmori
 date: 2022-07-13 18:00:00 +0900
 categories: [Blogging, DevOps]
@@ -31,7 +31,7 @@ tags: [cloud, gcp, google-cloud-platform]
 ### 권한
 - Im 매니지먼트을 통해 실시함. 협업 용
 
-### Compute Engin
+### Compute Engine
 - 가상장비 하나 받는 거라고 생각하면됨.
 - 최저비용이 월 만원정도
 - 이 인스턴스를 그대로 묶어 스냅샷 가능 -> 부팅디스크 항목을 설정하면 됨. -> 도커 같은 느낌이지
@@ -66,3 +66,22 @@ tags: [cloud, gcp, google-cloud-platform]
   - mysql 쿼리와 동일
   - 쿼리를 쓰다보니 접근성이 진짜 캡좋음. 누구나 쉽게 쓸 수 있음. 하둡 사용같은 허들 필요없음.
   - 장비 관리 필요없음
+- 웹으로 workbench 같은걸 제공함. 누구나 약간 편하게 거대 저장소를 쓸 수 있게 오픈한 상태
+- 특징
+  - 칼럼마다 쪼개서 데이터를 저장
+  - 노 인덱스, 항상 풀스캔
+  - 칼럼마다 다른파일로 저장하기 떄문에, 데이터 저장 삭제만 가능함. 수정 불가능.
+  - insert into 3개 넣는게 2초가 걸림... 소규모 데이터 빈번하게 넣거나 업데이트하는데는 매우 좋지않은 서비스.
+
+## GCP PUB / SUB
+- 퍼블리셔 1 / 구독자 다수
+- 특정 주제 메세지 전송하면 -> 구독자가 메세지 송신함.
+  - 데이터 동기화 같은거에 쓰는듯?
+  - 서비스간 통로를 통일하는데 괜찮긴한듯. 뭐 우리가 카프카 쓰는거랑 차이는 없을것 같음.
+- 방법
+  - 버킷 생성 -> 주제 생성 -> 메세지 누가 주제로보내면 -> DataFlow 따라 -> 빅쿼리나 스토리지에 기록
+
+## AppEngine
+
+## Cloud Scheduler
+- 약간 jenkins 같이 타이머 시간마다 호출하게 해주는거 구독에 쓰기도함.
