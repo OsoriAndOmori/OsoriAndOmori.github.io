@@ -30,7 +30,9 @@ tags: [spring, spring-batch]
     - 위에 단점들을 다 완벽하게 커버 가능함.
   - 단점
     - 깔아야함. jenkins 띄우는데만 보통 메모리 2G~4G 씀. jenkins 까는 script 는 보통 관리 잘안하니까 이전설치하거나할떄 너무 빡침. job 셋팅 export 같은것도 지원은 하는데 잘 안됨.
-    - 설정 변경 히스토리가 의외로 안 남아서 오류나면 범인찾기 생각보다 어려움.
+    - ~~설정 변경 히스토리가 의외로 안 남아서 오류나면 범인찾기 생각보다 어려움.~~
+    - 설정 변경 히스토리 남기려면 좀 귀찮음
+      - 버전 제한도 있는 듯함. https://blog.leocat.kr/notes/2020/10/15/jenkins-save-config-histories
 
 ### 실행 방식
 - mvc 로 띄워놓고 API 호출
