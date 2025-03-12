@@ -3,7 +3,7 @@ title: react-three-fiber 로 야구 중계 만들기
 author: OsoriAndOmori
 date: 2021-03-05 18:00:00 +0900
 categories: [Blogging, React]
-tags: [react, threejs, react-three-fiber]
+tags: [nodejs, react, threejs, react-three-fiber]
 ---
 
 ## 0. 결과물 부터
