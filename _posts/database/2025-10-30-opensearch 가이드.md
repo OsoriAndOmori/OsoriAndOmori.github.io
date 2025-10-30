@@ -6,7 +6,7 @@ categories: [Blogging, Database]
 tags: [database, elasticsearch, sharding, opensearch]
 ---
 
-1.️ 분산형 검색 및 분석 엔진
+1. 분산형 검색 및 분석 엔진
 - Elasticsearch 오픈소스 기반으로 Amazon이 유지 중인 Community-Driven Fork
 - 분산 인덱싱 + 검색 엔진 → 대용량 로그, 메트릭, 문서 데이터를 수평 확장으로 처리
 - REST API 기반으로 쉽게 접근 (/_search, /_cat/indices 등)
