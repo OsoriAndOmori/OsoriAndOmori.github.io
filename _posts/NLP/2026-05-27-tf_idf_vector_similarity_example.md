@@ -1,7 +1,7 @@
 ---
 title: TF-IDF 벡터와 벡터 유사도 예시
 author: OsoriAndOmori
-date: 2026-04-28 12:00:00 +0900
+date: 2026-05-26 12:00:00 +0900
 categories: [Blogging, NLP]
 tags: [rag, nlp, llm, embedding, search]
 ---
