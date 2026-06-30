@@ -1,7 +1,7 @@
 ---
 title: AMD 장기 투자 관점에서 CUDA와 GPU 생태계 이해하기
 author: OsoriAndOmori
-date: 2026-06-30 12:00:00 +0900
+date: 2026-06-30 08:00:00 +0900
 categories: [Blogging, DevOps]
 tags: [cuda, gpu, nvidia, amd, pytorch, ai]
 ---
