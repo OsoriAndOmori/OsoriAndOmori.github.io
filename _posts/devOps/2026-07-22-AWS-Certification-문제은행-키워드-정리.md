@@ -55,6 +55,10 @@ VPC의 자원이 온프레미스 도메인을 질의할 때 사용한다. Forwar
 
 하나의 Direct Connect 연결로 여러 리전의 VPC 또는 Transit Gateway에 접근할 때 사용한다. Direct Connect 자체는 암호화를 제공하지 않으므로 필요하면 VPN을 함께 고려한다.
 
+### Security Group vs Network ACL
+
+Security Group은 ENI/인스턴스 수준의 상태 저장형 방화벽이라 허용 규칙만 작성한다. Network ACL은 서브넷 수준의 상태 비저장형 방화벽이라 허용·거부 규칙과 요청·응답 양방향을 각각 설정한다.
+
 ## 컴퓨팅과 확장
 
 ### Cluster Placement Group
@@ -129,7 +133,11 @@ Replication Rule을 만들기 전에 존재하던 객체나 복제에 실패한 
 
 ### EBS Multi-Attach
 
-지원되는 io1/io2 볼륨 하나를 같은 AZ의 여러 Nitro 기반 EC2에 연결한다. 애플리케이션이 동시 쓰기를 직접 조정해야 하며 일반 파일 시스템 공유 용도는 아니다.
+지원되는 io1/io2 볼륨 하나를 같은 AZ의 Nitro 기반 EC2 최대 16대에 연결한다. 애플리케이션이 동시 쓰기를 직접 조정해야 하며 XFS, EXT4 같은 일반 파일 시스템을 여러 서버가 동시에 쓰는 용도는 아니다.
+
+### EFS vs EBS
+
+여러 EC2가 NFS 파일 시스템을 동시에 공유하고 사용량에 따라 저장 용량이 자동 증감해야 하면 EFS다. EC2에 낮은 지연의 블록 디스크를 붙이는 문제라면 EBS이며, 여러 인스턴스 공유는 일반 기능이 아니라 Multi-Attach의 제한 조건을 확인해야 한다.
 
 ### FSx for Lustre
 
@@ -142,6 +150,10 @@ NFS, SMB, iSCSI와 ONTAP 기능이 필요한 경우 사용한다. 온프레미�
 ### DataSync
 
 온프레미스와 AWS 스토리지 또는 AWS 스토리지끼리 대량 데이터를 온라인으로 반복 전송한다. 예약 전송, 검증, 암호화가 필요하면 단순 CLI 복사보다 적합하다.
+
+### 데이터 이전 서비스 고르기
+
+온라인 대량 복사는 DataSync, 온프레미스 스토리지를 AWS와 계속 연동하면 Storage Gateway, 안정적인 상시 전용 회선은 Direct Connect다. Snowball Edge는 기존 고객의 오프라인 이전에는 쓸 수 있지만 신규 고객은 주문할 수 없으므로, 최신 문제에서는 AWS Data Transfer Terminal이나 파트너 솔루션도 확인한다.
 
 ### S3 File Gateway
 
@@ -158,6 +170,10 @@ Cached Volume은 주 데이터를 S3에 두고 자주 쓰는 데이터만 로컬
 ### AWS Transfer Family
 
 SFTP, FTPS, FTP, AS2 클라이언트를 유지하면서 백엔드를 S3나 EFS로 바꿀 때 사용한다. 대량 데이터 마이그레이션 자체가 목적이면 DataSync와 구분한다.
+
+### S3 Lifecycle 전환
+
+접근 패턴이 명확하면 `S3 Standard → Standard-IA → Glacier Deep Archive → Expiration` 순서로 자동 전환·삭제할 수 있다. Standard-IA는 생성 후 최소 30일이 지나야 전환할 수 있고, Deep Archive는 180일 최소 보관 비용이 있다는 점도 같이 본다.
 
 ## 데이터베이스와 캐시
 
@@ -189,15 +205,23 @@ DynamoDB 전용 인메모리 캐시로 읽기 지연을 마이크로초 단위�
 
 트래픽이 특정 파티션 키에 몰릴 때 파티션별 처리량을 자동 조정한다. 그렇다고 한 개의 극단적인 Hot Key 설계를 해결해 주는 것은 아니다.
 
+### DynamoDB Provisioned vs On-demand
+
+트래픽이 안정적이고 예측 가능하며 처리량을 직접 관리해 비용을 최적화하면 Provisioned Capacity를 본다. 트래픽이 불규칙하거나 급증하고 용량 계획 없이 요청당 과금하려면 On-demand가 맞지만, 이전 최고치의 두 배를 갑자기 넘는 급증은 Throttling 가능성을 고려한다.
+
 ### ElastiCache Redis vs Memcached
 
-Redis는 복제, Multi-AZ, 자동 장애 조치, 영속성, 복잡한 자료구조가 필요할 때 선택한다. Memcached는 단순한 분산 캐시를 여러 코어로 확장할 때 어울린다.
+Valkey/Redis OSS는 복제, Multi-AZ, 자동 장애 조치, 백업·복원, 영속성, 복잡한 자료구조가 필요할 때 선택한다. Memcached는 복제나 영속성 없이 노드 장애 시 데이터가 사라져도 되는 단순 멀티스레드 분산 캐시에 어울린다.
 
 ## 메시징과 이벤트
 
 ### SQS FIFO Message Group ID
 
-같은 Message Group 안에서만 순서를 보장한다. 서로 다른 Group ID를 사용하면 FIFO Queue에서도 여러 메시지를 병렬 처리할 수 있다.
+같은 Message Group 안에서만 순서를 보장한다. 서로 다른 Group ID를 사용하면 FIFO Queue에서도 여러 메시지를 병렬 처리할 수 있다. Message Deduplication ID나 Content-based Deduplication은 5분의 중복 제거 구간에 적용되며, 소비자 처리까지 무조건 한 번만 실행된다는 뜻은 아니므로 멱등성은 여전히 챙긴다.
+
+### SQS Standard와 멱등성
+
+Standard Queue는 At-least-once 전달이라 같은 메시지가 다시 도착할 수 있고 순서도 보장하지 않는다. 메시지 처리 결과를 중복 적용하지 않도록 요청 ID나 비즈니스 키를 이용해 소비자를 멱등하게 만든다.
 
 ### SQS Dead-letter Queue Redrive
 
@@ -214,6 +238,10 @@ Event Bus의 이벤트를 보관하고 특정 기간의 이벤트를 나중에 �
 ### Kinesis Data Streams vs Amazon Data Firehose
 
 Streams는 여러 소비자가 실시간으로 직접 처리하고 재생해야 할 때 사용한다. Firehose는 스트리밍 데이터를 S3, Redshift, OpenSearch 등으로 최소 운영 부담으로 전달할 때 사용한다.
+
+### SQS vs Kinesis Data Streams / Amazon MSK
+
+작업을 한 소비자에게 분배하고 생산자와 소비자를 느슨하게 결합하면 SQS다. 여러 소비자가 같은 이벤트를 독립적으로 읽고 순서·보존·재처리가 필요한 스트림이면 Kinesis Data Streams, Kafka 호환 생태계가 명시되면 Amazon MSK를 본다.
 
 ### API Gateway Private API
 
@@ -233,9 +261,13 @@ AWS 서비스나 애플리케이션에 KMS Key 사용 권한을 동적으로 위
 
 외부 SaaS 업체가 여러 고객 계정의 Role을 Assume할 때 Confused Deputy 문제를 막는다. 제3자에게 Role ARN과 함께 고객별 External ID를 사용하게 한다.
 
-### AWS Secrets Manager Rotation
+### Secrets Manager vs Parameter Store
 
-Lambda를 사용해 DB 비밀번호 같은 Secret을 자동 교체한다. 단순 암호화 설정값 저장과 저렴한 비용이 핵심이면 SSM Parameter Store도 후보가 된다.
+DB 자격 증명이나 API Key를 저장하면서 자동 교체, 교차 리전 복제, 세밀한 감사가 필요하면 Secrets Manager를 본다. Parameter Store는 `String`, `StringList`, KMS로 암호화하는 `SecureString`을 지원하지만 기본 자동 교체 기능은 없어서 일반 설정값이나 저렴한 암호화 저장에 어울린다.
+
+### SSE-S3 vs SSE-KMS
+
+별도 키 관리 요구 없이 S3 기본 저장 암호화만 필요하면 추가 비용 없는 SSE-S3를 쓴다. 키 정책으로 접근을 제어하거나 키 사용을 CloudTrail에서 감사하고 고객 관리 키·교차 계정 접근이 필요하면 SSE-KMS를 본다.
 
 ### AWS RAM (Resource Access Manager)
 
@@ -251,7 +283,7 @@ GuardDuty는 계정과 네트워크의 위협 탐지, Inspector는 EC2·컨테�
 
 ### WAF vs Shield Advanced vs Firewall Manager
 
-WAF는 HTTP 요청 규칙으로 웹 공격을 막고, Shield Advanced는 강화된 DDoS 보호와 비용 보호를 제공한다. Firewall Manager는 Organizations 여러 계정에 이 정책들을 중앙 배포한다.
+WAF는 HTTP 요청을 검사해 IP·국가 기반 차단, SQL Injection, XSS 같은 웹 공격을 막는다. Shield Standard는 모든 계정에 기본 포함된 네트워크·전송 계층 DDoS 보호이고, Shield Advanced는 강화된 DDoS 대응과 비용 보호를 제공한다. Firewall Manager는 Organizations 여러 계정에 이 정책들을 중앙 배포한다.
 
 ### SCP와 Permission Boundary
 
@@ -282,6 +314,10 @@ RPO는 장애 시 허용 가능한 **데이터 손실 시간**, RTO는 서비스
 ### Compute Savings Plans vs EC2 Instance Savings Plans
 
 Compute Savings Plans는 EC2 인스턴스 패밀리·리전뿐 아니라 Fargate와 Lambda까지 유연하게 적용된다. EC2 Instance Savings Plans는 특정 리전과 인스턴스 패밀리를 약정하는 대신 할인 폭이 더 크다.
+
+### On-demand vs Spot vs Savings Plans vs Dedicated Host
+
+약정 없이 중단되면 안 되는 단기·불규칙 워크로드는 On-demand, 중단 가능한 배치 작업의 최대 비용 절감은 Spot이다. 지속적인 사용 금액을 1년 또는 3년 약정하면 Savings Plans, 물리 서버 격리나 소켓·코어 기반 라이선스가 필요하면 Dedicated Host를 본다.
 
 ---
 
