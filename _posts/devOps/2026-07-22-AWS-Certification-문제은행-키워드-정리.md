@@ -10,9 +10,29 @@ toc: true
 
 AWS Solutions Architect Associate(SAA-C03) 문제은행 **684문항**과 정답 해설, 직접 틀린 문제 메모를 기준으로 다시 정리했다. 서비스 설명을 사전처럼 나열하기보다, 문제의 조건에서 **정답을 결정하는 표현**과 **비슷한 오답을 제거하는 기준**에 집중한다.
 
-인쇄해서 볼 수 있는 [10페이지 PDF 요약본](/output/pdf/AWS-SAA-C03-문제은행-결정-키워드.pdf)도 함께 만들었다.
+인쇄해서 볼 수 있는 [20페이지 PDF 요약본](/output/pdf/AWS-SAA-C03-문제은행-결정-키워드.pdf)도 함께 만들었다.
 
 > 이 글의 숫자는 제공된 문제 PDF에서 서비스명이 등장한 문항 수를 단순 집계한 값이다. 한 문항에 정답과 오답 서비스가 함께 있으므로 출제 비중의 절대값이 아니라, 복습 우선순위를 잡는 지표로만 본다.
+
+## 이 문제은행, SAA-C03 범위가 맞나?
+
+결론부터 말하면 **핵심 범위는 대부분 맞고, 실전형 서비스 선택 연습용으로 충분히 넓다.** 공식 SAA-C03은 보안 30%, 복원력 26%, 고성능 24%, 비용 최적화 20%의 네 도메인으로 구성된다. 이 문제은행도 IAM/KMS/VPC 보안, Multi-AZ/Auto Scaling/DR, 스토리지·DB·네트워크 성능, 구매 옵션·스토리지 클래스 비용 문제가 반복된다.
+
+| 공식 도메인 | 문제은행에서 반복되는 대표 주제 | 판단 |
+|---|---|---|
+| Secure Architectures 30% | IAM Role, Organizations, KMS, S3 policy, SG/NACL, WAF/Shield | 핵심 충분 |
+| Resilient Architectures 26% | Multi-AZ, Auto Scaling, SQS decoupling, backup, multi-Region DR | 핵심 충분 |
+| High-Performing Architectures 24% | EBS/FSx, ElastiCache, DynamoDB, CloudFront, Kinesis, read scaling | 핵심 충분 |
+| Cost-Optimized Architectures 20% | Spot/RI, S3 class, NAT 비용, serverless, Cost Explorer | 핵심 충분 |
+
+다만 **유명한 문제은행 = 현재 시험 범위를 완벽하게 보장하는 공식 자료**는 아니다.
+
+- 원본 PDF 생성 시점이 2024년이라 `AWS SSO`, `Amazon Elasticsearch Service`, `Kinesis Data Firehose`처럼 옛 이름이 섞여 있다. 현재 이름은 IAM Identity Center, Amazon OpenSearch Service, Amazon Data Firehose다.
+- 일부 해설은 지나치게 단정적이거나 부정확하다. 예를 들어 “SQS queue는 초당 3,000 messages가 최대”라는 설명은 Standard queue와 FIFO queue의 조건을 섞은 것이다.
+- 공식 in-scope 목록에 있지만 이 문제은행에서 거의 보이지 않는 서비스도 있다. Application Migration Service, Compute Optimizer, X-Ray, Artifact/Audit Manager, Managed Grafana/Prometheus, Kendra, Keyspaces 등이 대표적이다.
+- 반대로 EC2, S3, Lambda, RDS, ELB, VPC처럼 실제 설계 판단의 중심이 되는 서비스는 매우 많이 반복된다. 시험 대비 효율 면에서는 자연스러운 편중이다.
+
+따라서 이 자료는 **문제은행으로 패턴을 익히되, 정답 해설은 절대적인 사실로 외우지 않고 공식 기능과 비교**하는 방식으로 사용한다. 아래 정리에는 문제은행에서 빠진 공식 범위 중 SAA 수준에서 알아둘 가치가 있는 항목도 보충했다.
 
 ## 먼저 볼 것: 반복 출제 지도
 
@@ -101,6 +121,16 @@ AWS Solutions Architect Associate(SAA-C03) 문제은행 **684문항**과 정답 
 
 HTML/CSS/JS/이미지만 있는 사이트는 **S3 static website hosting**으로 웹 서버 없이 제공할 수 있다. 글로벌 HTTPS, 캐시, 오리진 보호까지 요구하면 앞에 **CloudFront**를 둔다. 동적 서버 코드가 필요한데 S3만 고르는 것은 오답이다.
 
+### S3 접근·복제 세부 함정
+
+- S3 버킷은 기본적으로 private이다. 퍼블릭 정적 사이트와 private S3 origin + CloudFront OAC를 구분한다.
+- 객체 단위 임시 다운로드/업로드 권한: **presigned URL**. AWS 자격 증명을 사용자에게 주지 않는다.
+- 소유권이 다른 업로더 문제: **S3 Object Ownership - Bucket owner enforced**와 ACL 비활성화를 먼저 본다.
+- Versioning은 덮어쓰기·삭제로부터 복구할 수 있게 하지만 비용이 계속 쌓인다. noncurrent version Lifecycle도 함께 본다.
+- CRR/SRR은 source와 destination 모두 Versioning이 필요하다. 기존 객체는 일반 replication rule만으로 자동 복제되지 않으므로 Batch Replication을 본다.
+- SSE-KMS 복제는 destination KMS key 권한과 replication role 권한까지 필요하다.
+- 수백만 객체에 태그·복사·복원 작업: **S3 Batch Operations**. 액세스 패턴과 비용 가시화는 **S3 Storage Lens**.
+
 ## 컴퓨팅, 확장, 구매 옵션
 
 ### EC2 구매 옵션
@@ -140,6 +170,29 @@ HTML/CSS/JS/이미지만 있는 사이트는 **S3 static website hosting**으로
 - DB 연결 폭증은 **RDS Proxy**로 연결 풀링한다.
 - 장시간·특수 런타임·서버 제어가 필요하면 Lambda만 고집하지 말고 ECS/Fargate 또는 EC2를 본다.
 
+### 컨테이너와 배포
+
+| 결정 문구 | 선택 |
+|---|---|
+| 컨테이너 실행, 서버 관리 원치 않음 | ECS/EKS + **Fargate** |
+| AWS 네이티브 오케스트레이션, 운영 단순 | **ECS** |
+| Kubernetes API·생태계·이식성 | **EKS** |
+| 컨테이너 이미지 저장·취약점 스캔 | **ECR** |
+| 큐 기반 대규모 배치 작업 | **AWS Batch** |
+| 코드 배포와 인프라 운영을 더 추상화 | **Elastic Beanstalk** |
+
+Fargate는 오케스트레이터가 아니라 ECS 또는 EKS에서 사용하는 serverless compute option이다. 이미지 저장소는 ECR, 실행·스케줄링은 ECS/EKS로 역할을 나눈다.
+
+### Auto Scaling 정책과 배포 안전장치
+
+- Target tracking: 평균 CPU 50%처럼 목표값을 유지. 가장 단순한 기본 선택.
+- Step scaling: 알람 크기에 따라 단계별 증감. 급격한 변화에 세밀한 조절.
+- Scheduled scaling: 예측 가능한 시간대 트래픽.
+- Predictive scaling: 과거 패턴을 예측해 미리 용량 확보.
+- Lifecycle hook: launch/terminate를 잠시 멈추고 초기화·로그 수집.
+- Warm pool: 초기화된 인스턴스를 대기시켜 긴 부팅 시간을 줄임.
+- Launch configuration보다 **Launch Template**을 우선한다. 여러 instance type·Spot 혼합 정책에도 필요하다.
+
 ## 데이터베이스와 캐시
 
 ### RDS Multi-AZ를 먼저 구분
@@ -175,6 +228,28 @@ HTML/CSS/JS/이미지만 있는 사이트는 **S3 static website hosting**으로
 
 읽기 확장을 위해 RDS standby를 고르지 않는다. 관계형 읽기 확장은 Read Replica/Aurora reader, 키-값 초저지연은 DynamoDB/DAX, 반복 조회 캐시는 ElastiCache를 본다.
 
+### DynamoDB 세부 결정
+
+- Partition key는 트래픽이 고르게 분산되도록 high-cardinality 값을 고른다. 특정 key에 요청이 몰리면 hot partition이 된다.
+- GSI는 새로운 partition/sort key로 전체 테이블을 조회한다. LSI는 같은 partition key 안에서 다른 sort key를 사용하며 테이블 생성 시 정의한다.
+- TTL은 만료 항목을 자동 삭제하는 비용 효율적인 방법이지만 즉시 삭제 보장은 아니다.
+- 조건부 쓰기와 transaction은 동시성 충돌·원자성 요구에 사용한다.
+- Point-in-time recovery는 연속 백업, on-demand backup은 특정 시점 장기 보존에 적합하다.
+
+### 분석 서비스 선택
+
+| 요구 | 선택 |
+|---|---|
+| S3 파일을 서버 없이 SQL로 질의 | Athena |
+| 데이터 카탈로그·ETL·schema discovery | AWS Glue |
+| 대규모 Spark/Hadoop 처리 | Amazon EMR |
+| 컬럼형 데이터 웨어하우스 | Redshift |
+| 로그·검색·대시보드 | OpenSearch Service |
+| BI 시각화·대시보드 | QuickSight |
+| 데이터 레이크 권한 중앙 관리 | Lake Formation |
+
+Athena는 저장소가 아니라 S3 데이터를 질의하는 엔진이다. Redshift Spectrum도 S3를 읽을 수 있지만, 이미 Redshift 분석 환경이 있거나 웨어하우스 조인이 핵심인지 확인한다.
+
 ## 네트워크와 글로벌 전송
 
 ### CloudFront vs Global Accelerator vs Route 53
@@ -188,6 +263,20 @@ HTML/CSS/JS/이미지만 있는 사이트는 **S3 static website hosting**으로
 HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFront, HTTP/HTTPS라도 **고정 글로벌 IP + 멀티리전 장애 조치 + 캐시 불필요**가 핵심이면 Global Accelerator가 더 맞다. 일반 TCP/UDP 애플리케이션에 CloudFront를 고르지 않는다.
 
 시험 암기: **`Global static IP + TCP/UDP + 글로벌 최적 경로` -> Global Accelerator**.
+
+### Route 53 라우팅 정책
+
+| 정책 | 결정 문구 |
+|---|---|
+| Simple | 특별한 정책 없이 하나의 리소스 |
+| Weighted | blue/green, A/B, 비율별 분산 |
+| Latency-based | 사용자에게 지연이 가장 낮은 리전 |
+| Failover | active-passive + health check |
+| Geolocation | 사용자의 국가·대륙 위치에 따른 규칙 |
+| Geoproximity | 리소스 위치와 bias로 지리적 분산 |
+| Multi-value answer | 여러 healthy record를 DNS 응답; load balancer 대체는 아님 |
+
+Alias record는 AWS 리소스(ALB, CloudFront, S3 website 등)를 루트 도메인에도 연결할 수 있고 Route 53 query 요금 측면의 장점이 있다. CNAME은 zone apex에 사용할 수 없다.
 
 ### VPC 사설 연결
 
@@ -212,6 +301,14 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 - Network ACL: subnet 수준, stateless, allow/deny, 요청·응답 양방향 규칙.
 - NAT Gateway는 private subnet의 **아웃바운드 인터넷**용이지 외부에서 들어오는 연결을 허용하지 않는다.
 
+### Load Balancer 세부 구분
+
+- ALB: Layer 7, HTTP/HTTPS, host/path/header/query 기반 라우팅, WAF 연동.
+- NLB: Layer 4, TCP/UDP/TLS, source IP 보존, 고정 IP/EIP, 갑작스러운 대규모 트래픽.
+- GWLB: GENEVE 기반으로 방화벽·IDS/IPS fleet을 경로에 삽입.
+- Cross-zone load balancing, deregistration delay, health check가 선택지에 나오면 “부하 분산”과 “장애 조치”를 따로 본다.
+- ALB access log는 S3, 애플리케이션 지표는 CloudWatch, API 변경 감사는 CloudTrail이다.
+
 ## 메시징, 이벤트, 스트리밍
 
 ### SNS와 SQS를 분리해서 생각
@@ -222,6 +319,15 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 - DB가 순간 폭주를 감당하지 못함: SNS에서 Lambda를 바로 폭증시키기보다 **SQS로 버퍼링**하고 소비 동시성을 제한.
 - `Standard queue`는 매우 높은 처리량, at-least-once, best-effort ordering이므로 소비자를 멱등하게 만든다.
 - 순서와 중복 제거가 필수: FIFO queue. `MessageGroupId`가 같은 메시지 안에서 순서가 보장된다.
+
+### SQS 운영 키워드
+
+- Visibility timeout: 처리 중 메시지를 다른 consumer에게 숨기는 시간. 처리보다 짧으면 중복 실행이 늘어난다.
+- Long polling: 빈 응답과 API 호출 비용을 줄인다.
+- Dead-letter queue: 반복 실패 메시지 격리. maxReceiveCount와 redrive를 함께 본다.
+- Delay queue/message timer: 일정 시간 뒤 메시지를 보이게 한다.
+- Standard는 at-least-once이므로 exactly-once **processing**을 보장한다고 외우지 않는다. 애플리케이션 멱등성이 필요하다.
+- FIFO의 deduplication ID는 중복 전송 억제, message group ID는 그룹 내 순서·병렬성 단위다.
 
 ### EventBridge·Step Functions
 
@@ -240,6 +346,8 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 
 암기: **Data Streams = Kafka처럼 스트림을 보관하고 소비자가 읽음**, **Firehose = 목적지로 알아서 적재하는 파이프라인**. Firehose는 일반적인 메시지 큐 대체가 아니다.
 
+Kinesis Data Streams의 처리량은 shard와 on-demand/provisioned mode를 본다. 여러 consumer가 독립적으로 높은 처리량을 요구하면 enhanced fan-out이 후보이고, 스트림 SQL/Apache Flink 처리는 Amazon Managed Service for Apache Flink를 떠올린다. Kafka 호환 API와 기존 Kafka 도구가 결정타면 MSK다.
+
 ## 보안, 계정, 규정 준수
 
 ### 교차 계정과 Organizations
@@ -257,6 +365,15 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 `IAM Identity Center + AWS Managed Microsoft AD + self-managed AD와 two-way forest trust`
 
 계정마다 IAM user를 복제하는 선택지는 운영 부담과 보안 측면에서 탈락한다.
+
+### 자격 증명과 비밀 관리
+
+- 애플리케이션에 access key를 하드코딩하지 않는다. EC2 instance profile, ECS task role, Lambda execution role을 사용한다.
+- DB password 자동 회전이 핵심이면 **Secrets Manager**.
+- 구성값·간단한 secret을 계층적으로 저장하고 비용을 줄이면 **Systems Manager Parameter Store**. 회전 기능 요구를 확인한다.
+- 웹·모바일 최종 사용자 가입/로그인과 token은 **Amazon Cognito**. 직원의 여러 AWS 계정 SSO는 IAM Identity Center다.
+- 퍼블릭 TLS 인증서 발급·자동 갱신은 **ACM**. CloudFront 인증서는 us-east-1 요구를 기억한다.
+- 전용 HSM과 직접 키 제어 요구는 CloudHSM, 일반적인 관리형 키·서비스 통합은 KMS다.
 
 ### Config vs CloudTrail vs CloudWatch
 
@@ -281,6 +398,17 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 - Shield Advanced: DDoS 보호 강화와 비용 보호·지원.
 - Firewall Manager: Organizations 전반의 WAF/Shield/보안 정책 중앙 관리.
 
+### 공식 범위 보충: 적게 나온 관리·보안 서비스
+
+- AWS Artifact: AWS 규정 준수 보고서와 계약 문서 다운로드.
+- Audit Manager: 감사 증거를 지속 수집하고 평가 보고서 구성.
+- Security Hub: 여러 보안 서비스 finding과 표준 준수 상태를 중앙 집계.
+- Detective: 보안 finding 이후 관계와 활동을 시각화해 조사.
+- Compute Optimizer: 사용량 기반 EC2/EBS/Lambda 등의 right-sizing 추천.
+- X-Ray: 분산 요청 trace, service map, latency 원인 분석.
+- Application Migration Service(MGN): 서버를 block-level replication으로 lift-and-shift.
+- Managed Grafana/Prometheus: Kubernetes·애플리케이션 메트릭 시각화와 Prometheus 호환 모니터링. 핵심 출제 빈도는 낮다.
+
 ## 비용, 모니터링, 재해 복구
 
 ### 비용 도구
@@ -302,6 +430,15 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 - X-Ray: 분산 애플리케이션 요청 추적과 병목 분석.
 - CloudTrail: AWS API 감사. 조직 전체는 organization trail.
 
+### 비용 최적화 추가 포인트
+
+- Compute Savings Plans: instance family/리전/OS 변화에 더 유연. EC2 Instance Savings Plans보다 할인 유연성이 크다.
+- Reserved Instance: EC2/RDS 등 서비스별 약정 할인. Standard와 Convertible의 교환 유연성을 구분한다.
+- NAT Gateway 비용: 같은 AZ 경로, S3/DynamoDB gateway endpoint, interface endpoint의 시간·처리 비용을 함께 비교한다.
+- CloudFront cache는 사용자 지연뿐 아니라 origin data transfer와 처리 부하도 줄일 수 있다.
+- Compute Optimizer는 right-sizing 추천, Cost Explorer는 실제 비용 추세·필터 분석, Budgets는 임계치 알림이다.
+- Trusted Advisor는 비용·보안·성능·내결함성 등의 권장 사항, CUR은 가장 상세한 원천 비용 데이터다.
+
 ### DR 전략
 
 | 전략 | 비용 | RTO/RPO | 결정 문구 |
@@ -315,6 +452,21 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 - RTO: 얼마나 오래 중단을 허용하는가.
 - 백업 주기·복제 방식은 RPO를, 프로비저닝·전환 시간은 RTO를 결정한다.
 - Route 53 failover, Global Accelerator endpoint health, Aurora Global Database 같은 선택지는 요구 프로토콜·고정 IP·DB 엔진까지 함께 본다.
+
+### 다중 선택 문제의 조합 패턴
+
+| 요구 | 자주 맞물리는 조합 |
+|---|---|
+| 웹 계층 HA + DB HA | ALB + multi-AZ ASG + RDS Multi-AZ |
+| 서버리스 API + 관계형 DB 보호 | API Gateway + Lambda + RDS Proxy |
+| 다수 소비자 fan-out + burst 완충 | SNS + consumer별 SQS |
+| 정적 웹 글로벌 보안 배포 | private S3 + CloudFront OAC + ACM/WAF |
+| 온프레미스 대용량 반복 동기화 | Direct Connect/VPN + DataSync |
+| 조직 전체 보안 규칙 | Organizations + Firewall Manager/Config aggregator |
+| 암호화되지 않은 리소스 자동 수정 | Config rule + SSM Automation + execution role |
+| S3 데이터 레이크 분석 | S3 + Glue Data Catalog + Athena + Lake Formation |
+
+“Choose two/three”에서는 각 선택지가 같은 계층을 중복 해결하는지 확인한다. 예를 들어 ALB와 Route 53은 서로 완전 대체재가 아니라 DNS 진입과 HTTP 부하 분산으로 함께 쓰일 수 있다.
 
 ## 자주 틀리는 결정타 25개
 
@@ -357,6 +509,8 @@ HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFr
 
 ## 참고한 공식 문서
 
+- [AWS SAA-C03 시험 가이드와 도메인 비중](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html)
+- [SAA-C03 공식 in-scope AWS 서비스](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/saa-03-in-scope-services.html)
 - [Amazon S3 서버 측 암호화](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html)
 - [RDS Multi-AZ DB cluster 연결과 reader endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts-connection-management.html)
 - [AWS Global Accelerator 동작 방식](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)
