@@ -1,324 +1,366 @@
 ---
-title: AWS Solutions Architect Associate 문제은행 키워드 정리
+title: AWS SAA-C03 문제은행 결정 키워드 정리
 author: OsoriAndOmori
 date: 2026-07-22 12:00:00 +0900
+last_modified_at: 2026-08-15 18:00:00 +0900
 categories: [Blogging, DevOps]
-tags: [aws, cloud, saa-c03, certification]
+tags: [aws, cloud, saa-c03, certification, exam]
 toc: true
 ---
 
-AWS Solutions Architect Associate(SAA-C03) 문제은행을 풀다가 헷갈린 개념을 짧게 정리한다.
+AWS Solutions Architect Associate(SAA-C03) 문제은행 **684문항**과 정답 해설, 직접 틀린 문제 메모를 기준으로 다시 정리했다. 서비스 설명을 사전처럼 나열하기보다, 문제의 조건에서 **정답을 결정하는 표현**과 **비슷한 오답을 제거하는 기준**에 집중한다.
 
-IAM, EC2, S3 같은 기본 설명은 생략한다. 문제 보기에서 **비슷한 서비스 중 무엇을 골라야 하는지**, **특정 요구사항이 어떤 서비스의 힌트인지** 떠올리는 용도다.
+인쇄해서 볼 수 있는 [10페이지 PDF 요약본](/output/pdf/AWS-SAA-C03-문제은행-결정-키워드.pdf)도 함께 만들었다.
 
-시험 범위는 [AWS 공식 SAA-C03 Exam Guide](https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html)를 기준으로 한다.
+> 이 글의 숫자는 제공된 문제 PDF에서 서비스명이 등장한 문항 수를 단순 집계한 값이다. 한 문항에 정답과 오답 서비스가 함께 있으므로 출제 비중의 절대값이 아니라, 복습 우선순위를 잡는 지표로만 본다.
 
-## 네트워크와 전송
+## 먼저 볼 것: 반복 출제 지도
 
-### Gateway Endpoint
+| 우선순위 | 문제은행 등장 문항 수 | 먼저 구분할 것 |
+|---|---:|---|
+| EC2 | 313 | Auto Scaling, 구매 옵션, EBS, 배치 그룹 |
+| S3 | 273 | 스토리지 클래스, 전송, 복제, 암호화, 정적 웹 |
+| Lambda | 179 | 비동기 처리, 동시성, SQS/API Gateway 연동 |
+| RDS | 135 | Multi-AZ, Read Replica, Aurora, RDS Proxy |
+| Auto Scaling | 115 | ALB, 큐 깊이 기반 확장, 상태 확인 |
+| DynamoDB | 74 | On-demand, DAX, Global Tables, Streams |
+| CloudFront | 69 | 캐시·콘텐츠 배포와 Global Accelerator 구분 |
+| API Gateway | 61 | REST API, Lambda, Private API, 사용량 제한 |
+| EBS / SQS / Aurora | 57 / 54 / 48 | 블록 스토리지, 버퍼링, DB 고가용성 |
+| KMS / SNS / ECS / Kinesis | 44 / 41 / 41 / 40 | 암호화, fan-out, 컨테이너, 스트리밍 |
 
-S3와 DynamoDB를 VPC 안에서 인터넷이나 NAT Gateway 없이 접근할 때 사용한다. 라우팅 테이블에 경로가 추가되며 별도 시간당 비용이 없다.
+문장을 읽을 때는 `요구사항 -> 제약 -> 운영 부담 -> 비용` 순서로 표시한다.
 
-### Interface Endpoint (AWS PrivateLink)
+1. **무엇을 보장해야 하나?** 고가용성, 내구성, 순서, 고정 IP, RPO/RTO, 암호화.
+2. **무엇을 쓸 수 없나?** 인터넷 없음, 코드 변경 최소, 온프레미스 유지, 특정 리전 사용 불가.
+3. **운영 부담을 얼마나 줄여야 하나?** `least operational overhead`이면 관리형·서버리스·기본 기능을 우선한다.
+4. **비용 조건은 마지막에 적용한다.** 요구사항을 못 맞추는 싼 선택지는 정답이 아니다.
 
-서브넷에 사설 IP를 가진 ENI를 만들고 지원되는 AWS 서비스에 비공개로 접근한다. Security Group을 붙일 수 있고 시간당 비용과 데이터 처리 비용이 발생한다.
+## S3와 데이터 이동
 
-### VPC Peering의 비전이성 (Non-transitive)
+### 스토리지 클래스 결정표
 
-A-B, B-C가 Peering 되어 있어도 A-C는 통신하지 못한다. VPC가 많거나 중앙 허브 구조가 필요하면 Transit Gateway를 본다.
+| 문제의 결정 문구 | 정답 후보 | 오답 제거 포인트 |
+|---|---|---|
+| 접근 패턴을 예측할 수 없음 | **S3 Intelligent-Tiering** | 수명 주기로 시점을 정하려면 패턴을 알아야 함 |
+| 자주 접근하지 않지만 즉시 조회 | Standard-IA | 최소 저장 기간·검색 비용 확인 |
+| 한 AZ 손실을 감수할 수 있는 재생성 가능 데이터 | One Zone-IA | 고가용성 요구면 제외 |
+| 보관, 분~시간 단위 복원 허용 | Glacier Flexible Retrieval | 즉시 조회 요구면 제외 |
+| 장기 보관, 가장 저렴, 복원 지연 허용 | Glacier Deep Archive | 최소 저장 기간 확인 |
+| 날짜별 접근 패턴이 명확 | Lifecycle | `Standard -> IA -> Glacier -> Expiration` |
 
-### AWS Transit Gateway
+시험식 암기: **`unpredictable access pattern` -> Intelligent-Tiering**.
 
-여러 VPC와 VPN을 중앙 허브에 연결한다. 대규모 연결이나 전이 라우팅은 편하지만, VPC 두 개만 단순 연결한다면 Peering보다 비쌀 수 있다.
+### 전송·복제·잠금
 
-### Route 53 Resolver Inbound Endpoint
+| 상황 | 선택 |
+|---|---|
+| 전 세계 지점 + 고속 인터넷 + 한 버킷으로 빠른 업로드 | **S3 Transfer Acceleration + multipart upload** |
+| 온라인 반복 전송, NFS/SMB/객체 스토리지 | **DataSync** |
+| 수십 TB 이상, 네트워크 사용 최소, 일회성 오프라인 이동 | **Snowball Edge** |
+| SFTP/FTPS/FTP/AS2 인터페이스 유지 | **AWS Transfer Family** |
+| 온프레미스에서 NFS/SMB로 보이되 S3에 저장 | **S3 File Gateway** |
+| 새 객체를 다른 리전/계정으로 자동 복제 | **S3 Replication**; 양쪽 버전 관리 필요 |
+| 기존 객체까지 한 번에 복제 | **S3 Batch Replication** |
+| WORM, 보존 기간 중 삭제 방지 | **S3 Object Lock**; Compliance는 root도 삭제 불가 |
 
-온프레미스 DNS가 AWS VPC의 Private Hosted Zone 이름을 질의할 때 사용한다. 방향은 **온프레미스 → AWS DNS**다.
+`가장 빠르게`만 보고 Snowball을 고르지 않는다. **고속 인터넷이 이미 있고 매일 전송**한다면 Transfer Acceleration, **네트워크 대역폭을 거의 쓰지 않는 대용량 일회성 이전**이면 Snowball이다.
 
-### Route 53 Resolver Outbound Endpoint
+### 공유 파일 시스템
 
-VPC의 자원이 온프레미스 도메인을 질의할 때 사용한다. Forwarding Rule과 함께 쓰며 방향은 **AWS → 온프레미스 DNS**다.
+| 결정 문구 | 선택 | 핵심 |
+|---|---|---|
+| Linux, NFS, 여러 AZ의 EC2가 동시 공유 | **EFS** | 리전 단위 관리형 공유 파일 시스템 |
+| Windows IIS, SMB, 기존 Windows NAS/AD | **FSx for Windows File Server** | Windows 네이티브 파일 공유 |
+| HPC, 머신러닝, 유전체, 렌더링, S3 연동 병렬 처리 | **FSx for Lustre** | 초고속 분산 파일 시스템 |
+| NetApp, NFS+SMB+iSCSI, ONTAP 기능 유지 | **FSx for NetApp ONTAP** | NetApp 워크로드 이전 |
+| 단일 EC2 중심 블록 스토리지 | **EBS** | AZ 종속; 스냅샷은 S3에 관리됨 |
 
-### AWS Global Accelerator
+오답 메모: **Windows IIS + 기존 NAS 파일 공유 -> FSx for Windows**, **여러 Linux EC2가 같은 파일을 봄 -> EFS**.
 
-고정 Anycast IP를 제공하고 AWS 글로벌 네트워크를 통해 TCP/UDP 트래픽을 리전 엔드포인트로 전달한다. 콘텐츠 캐싱이 목적이면 CloudFront, 고정 IP·빠른 글로벌 네트워크 진입이 목적이면 Global Accelerator다.
+### EBS 성능
 
-### AWS PrivateLink
+- `gp2`: 용량이 커지면 기준 IOPS도 함께 증가한다.
+- `gp3`: 용량과 IOPS·처리량을 독립적으로 설정한다. 일반적인 비용 최적화 교체 후보.
+- `io2`: 일관된 고 IOPS·낮은 지연이 중요한 데이터베이스.
+- 스냅샷 복원 직후 모든 블록을 즉시 최고 성능으로 읽어야 하면 **Fast Snapshot Restore**.
+- EBS는 기본적으로 한 AZ의 블록 스토리지다. 여러 AZ 공유 문제를 스냅샷 복제로 해결하려 하지 않는다.
 
-상대 VPC의 전체 네트워크를 연결하지 않고 특정 서비스만 사설로 노출한다. CIDR 중복이 있어도 사용할 수 있으며 서비스 제공 측에는 보통 NLB가 필요하다.
+### S3 암호화 키 관리
 
-### Gateway Load Balancer
+| 방식 | 누가 키를 관리하나 | 문제의 신호 |
+|---|---|---|
+| SSE-S3 | S3가 전부 관리 | 별도 키 제어 없이 기본 서버측 암호화 |
+| SSE-KMS + AWS managed key | AWS KMS의 `aws/s3` 키 | KMS 감사·권한 통제는 필요하나 별도 키 생성 없음 |
+| SSE-KMS + customer managed key | 내가 KMS 키 정책·회전·권한 관리 | 키 회전과 접근을 직접 제어, 교차 계정 권한 |
+| SSE-C | 고객이 키를 제공하고 보관 | 요청마다 키 제공; KMS 키와 다름 |
 
-방화벽, IDS/IPS 같은 가상 네트워크 장비를 투명하게 트래픽 경로에 넣을 때 사용한다. 일반 웹 요청 분산용 ALB와는 목적이 다르다.
+`SSE-KMS`와 `customer managed key`는 동의어가 아니다. SSE-KMS는 AWS managed key 또는 customer managed key를 모두 쓸 수 있다. 문제에 **키 회전·키 정책을 직접 통제**가 나오면 customer managed KMS key를 고른다.
 
-### Direct Connect Gateway
+### 정적 웹사이트
 
-하나의 Direct Connect 연결로 여러 리전의 VPC 또는 Transit Gateway에 접근할 때 사용한다. Direct Connect 자체는 암호화를 제공하지 않으므로 필요하면 VPN을 함께 고려한다.
+HTML/CSS/JS/이미지만 있는 사이트는 **S3 static website hosting**으로 웹 서버 없이 제공할 수 있다. 글로벌 HTTPS, 캐시, 오리진 보호까지 요구하면 앞에 **CloudFront**를 둔다. 동적 서버 코드가 필요한데 S3만 고르는 것은 오답이다.
 
-### Security Group vs Network ACL
+## 컴퓨팅, 확장, 구매 옵션
 
-Security Group은 ENI/인스턴스 수준의 상태 저장형 방화벽이라 허용 규칙만 작성한다. Network ACL은 서브넷 수준의 상태 비저장형 방화벽이라 허용·거부 규칙과 요청·응답 양방향을 각각 설정한다.
+### EC2 구매 옵션
 
-## 컴퓨팅과 확장
+| 워크로드 | 선택 |
+|---|---|
+| 24시간 켜지는 예측 가능한 baseline | **Reserved Instances 또는 Savings Plans** |
+| 짧고 수량 변화가 크며 중단 가능 | **Spot Instances** |
+| 시작·종료가 자유롭고 약정 없음 | On-Demand |
+| 물리 서버 단독 사용, 라이선스/규정 | Dedicated Host |
+| 특정 AZ의 용량을 반드시 확보 | Capacity Reservation |
 
-### Cluster Placement Group
+오답 메모의 전형: **항상 실행하는 Frontend -> Reserved**, **짧게 실행되고 탄력적이며 중단 가능한 Backend -> Spot**. 단, 중단 불가·상태 저장 작업이면 Spot을 비용만 보고 고르지 않는다.
 
-인스턴스를 한 AZ의 가까운 하드웨어에 배치해 낮은 지연과 높은 네트워크 처리량을 얻는다. 대신 동시에 많은 인스턴스를 시작하기 어렵고 장애 범위가 커질 수 있다.
+### 고가용성 웹 계층
 
-### Partition Placement Group
+`Route 53/CloudFront -> ALB -> 여러 AZ의 Auto Scaling group -> 관리형 DB/공유 스토리지`가 기본 뼈대다.
 
-인스턴스 그룹을 서로 다른 하드웨어 파티션에 분산한다. HDFS, Kafka, Cassandra처럼 일부 노드 장애를 견디는 대규모 분산 시스템에 어울린다.
+- ALB: HTTP/HTTPS, 경로·호스트 기반 라우팅, Lambda도 대상 가능.
+- NLB: TCP/UDP/TLS, 초고성능, 고정 IP 요구.
+- Gateway Load Balancer: 방화벽·IDS/IPS 같은 가상 네트워크 어플라이언스를 투명하게 삽입.
+- Auto Scaling은 여러 AZ에 배치하고 ALB health check를 함께 사용한다.
+- 작업 큐가 있으면 CPU보다 **SQS ApproximateNumberOfMessagesVisible(큐 깊이)** 기반 확장이 자연스럽다.
+- 세션/업로드 파일을 로컬 EBS에 두면 확장 시 데이터가 갈라진다. 세션은 ElastiCache/DynamoDB, 공유 파일은 EFS/FSx/S3로 외부화한다.
 
-### Spread Placement Group
+### 배치 그룹
 
-소수의 중요 인스턴스를 서로 다른 하드웨어에 최대한 분산한다. 함께 장애 나면 안 되는 작은 규모의 워크로드에 어울린다.
+- **Cluster**: 한 AZ, 가까운 하드웨어, 낮은 지연·높은 처리량. 함께 시작하기 어렵고 장애 범위가 크다.
+- **Spread**: 소수의 중요한 인스턴스를 서로 다른 하드웨어로 최대 분산.
+- **Partition**: HDFS/Kafka/Cassandra 같은 대규모 분산 시스템의 파티션별 장애 격리.
 
-### EC2 Capacity Reservation
+### Lambda 함정
 
-특정 AZ의 EC2 용량을 확보한다. 용량 보장이 목적이며 할인 상품은 아니다. 비용 할인은 Reserved Instance나 Savings Plans와 구분한다.
-
-### Zonal Reserved Instance
-
-특정 AZ에 적용하며 할인과 함께 용량 예약 효과가 있다. Regional RI는 더 유연하게 할인을 적용하지만 용량을 예약하지 않는다.
-
-### EC2 Fleet / Spot Fleet
-
-여러 인스턴스 타입과 AZ를 묶어 목표 용량을 확보한다. Spot 중단 위험을 줄이려면 단일 타입보다 여러 풀과 `capacity-optimized` 전략을 사용한다.
-
-### Auto Scaling Lifecycle Hook
-
-인스턴스 시작이나 종료를 잠시 멈추고 초기화, 로그 수집 같은 작업을 수행한다. 단순히 지표가 안정될 때까지 기다리는 Warm-up과는 다르다.
-
-### Auto Scaling Warm Pool
-
-미리 초기화된 인스턴스를 정지 또는 실행 상태로 보관해 Scale-out 시간을 줄인다. 부팅과 애플리케이션 준비가 오래 걸리는 경우에 유용하다.
-
-### Reserved Concurrency vs Provisioned Concurrency
-
-Lambda Reserved Concurrency는 함수가 사용할 수 있는 동시 실행 수를 보장하면서 상한도 건다. Provisioned Concurrency는 미리 실행 환경을 준비해 Cold Start를 줄인다.
-
-### SQS Visibility Timeout과 Lambda
-
-Lambda가 SQS 메시지를 처리하는 동안 다른 소비자에게 메시지를 숨기는 시간이다. 함수 처리 시간보다 너무 짧으면 같은 메시지가 다시 처리될 수 있으므로 멱등성도 필요하다.
-
-## 스토리지와 데이터 이동
-
-### S3 Object Lock
-
-WORM 방식으로 객체 버전을 정해진 기간 삭제·변경하지 못하게 한다. Governance Mode는 특별 권한으로 우회 가능하고, Compliance Mode는 루트 사용자도 보존 기간 전 삭제할 수 없다.
-
-### S3 Legal Hold
-
-보존 종료일 없이 객체 버전을 보호한다. Retention Period와 별개로 동작하며, 권한이 있는 사용자가 해제할 때까지 유지된다.
-
-### S3 Replication Time Control (RTC)
-
-리전 간 또는 동일 리전 복제에 예측 가능한 복제 시간을 요구할 때 사용한다. 대부분의 새 객체를 15분 안에 복제하는 SLA와 모니터링을 제공한다.
-
-### S3 Batch Replication
-
-Replication Rule을 만들기 전에 존재하던 객체나 복제에 실패한 객체를 일괄 복제한다. 일반 복제 규칙은 기본적으로 새로 들어오는 객체를 대상으로 한다.
-
-### S3 Multi-Region Access Points
-
-여러 리전의 S3 버킷 앞에 하나의 글로벌 엔드포인트를 제공하고 가장 가까운 활성 리전으로 요청을 보낸다. 리전 장애 시 Failover Control로 트래픽을 전환할 수 있다.
-
-### S3 Access Point
-
-하나의 S3 버킷을 여러 애플리케이션이나 팀이 사용할 때 각각 별도 엔드포인트와 정책을 만든다. 거대한 Bucket Policy 하나를 계속 수정하지 않고 접근 경로별 권한을 분리할 때 사용한다.
-
-### EBS Fast Snapshot Restore
-
-스냅샷으로 만든 새 볼륨의 모든 블록을 처음부터 최대 성능으로 읽게 한다. 켜 둔 AZ마다 비용이 발생하므로 복구 직전에 자동 활성화하는 문제가 자주 나온다.
-
-### EBS Multi-Attach
-
-지원되는 io1/io2 볼륨 하나를 같은 AZ의 Nitro 기반 EC2 최대 16대에 연결한다. 애플리케이션이 동시 쓰기를 직접 조정해야 하며 XFS, EXT4 같은 일반 파일 시스템을 여러 서버가 동시에 쓰는 용도는 아니다.
-
-### EFS vs EBS
-
-여러 EC2가 NFS 파일 시스템을 동시에 공유하고 사용량에 따라 저장 용량이 자동 증감해야 하면 EFS다. EC2에 낮은 지연의 블록 디스크를 붙이는 문제라면 EBS이며, 여러 인스턴스 공유는 일반 기능이 아니라 Multi-Attach의 제한 조건을 확인해야 한다.
-
-### FSx for Lustre
-
-HPC, 머신러닝처럼 병렬 처리량이 중요한 리눅스 워크로드용 파일 시스템이다. S3와 연결해 데이터를 빠르게 처리하고 결과를 다시 S3에 쓸 수 있다.
-
-### FSx for NetApp ONTAP
-
-NFS, SMB, iSCSI와 ONTAP 기능이 필요한 경우 사용한다. 온프레미스 NetApp 워크로드를 익숙한 방식으로 AWS에 옮긴다는 표현이 힌트다.
-
-### DataSync
-
-온프레미스와 AWS 스토리지 또는 AWS 스토리지끼리 대량 데이터를 온라인으로 반복 전송한다. 예약 전송, 검증, 암호화가 필요하면 단순 CLI 복사보다 적합하다.
-
-### 데이터 이전 서비스 고르기
-
-온라인 대량 복사는 DataSync, 온프레미스 스토리지를 AWS와 계속 연동하면 Storage Gateway, 안정적인 상시 전용 회선은 Direct Connect다. Snowball Edge는 기존 고객의 오프라인 이전에는 쓸 수 있지만 신규 고객은 주문할 수 없으므로, 최신 문제에서는 AWS Data Transfer Terminal이나 파트너 솔루션도 확인한다.
-
-### S3 File Gateway
-
-온프레미스 애플리케이션에는 NFS/SMB 파일 공유처럼 보이지만 데이터는 S3 객체로 저장된다. 자주 쓰는 데이터는 로컬 캐시에 남는다.
-
-### Volume Gateway: Cached vs Stored
-
-Cached Volume은 주 데이터를 S3에 두고 자주 쓰는 데이터만 로컬에 캐시한다. Stored Volume은 전체 주 데이터를 온프레미스에 두고 AWS에 비동기 백업한다.
-
-### Tape Gateway
-
-기존 백업 프로그램의 가상 테이프 라이브러리(VTL) 인터페이스를 유지하면서 테이프 데이터를 S3 Glacier 계열에 보관한다. 물리 테이프 교체 문제가 나오면 후보로 본다.
-
-### AWS Transfer Family
-
-SFTP, FTPS, FTP, AS2 클라이언트를 유지하면서 백엔드를 S3나 EFS로 바꿀 때 사용한다. 대량 데이터 마이그레이션 자체가 목적이면 DataSync와 구분한다.
-
-### S3 Lifecycle 전환
-
-접근 패턴이 명확하면 `S3 Standard → Standard-IA → Glacier Deep Archive → Expiration` 순서로 자동 전환·삭제할 수 있다. Standard-IA는 생성 후 최소 30일이 지나야 전환할 수 있고, Deep Archive는 180일 최소 보관 비용이 있다는 점도 같이 본다.
+- **Reserved Concurrency**: 함수가 사용할 수 있는 동시 실행 수를 예약하면서 상한도 설정.
+- **Provisioned Concurrency**: 실행 환경을 미리 준비해 cold start 감소.
+- SQS 트리거의 visibility timeout은 함수 처리·재시도 시간을 감당하도록 잡는다.
+- DB 연결 폭증은 **RDS Proxy**로 연결 풀링한다.
+- 장시간·특수 런타임·서버 제어가 필요하면 Lambda만 고집하지 말고 ECS/Fargate 또는 EC2를 본다.
 
 ## 데이터베이스와 캐시
 
-### Aurora Reader Endpoint
+### RDS Multi-AZ를 먼저 구분
 
-여러 Aurora Replica로 읽기 연결을 분산하는 엔드포인트다. Writer 장애 조치용 Cluster Endpoint와 구분한다.
+| 배포 | 목적 | 읽기 분산 |
+|---|---|---|
+| **Multi-AZ DB instance deployment** | 고가용성·자동 장애 조치 | standby는 읽기용으로 사용하지 않음 |
+| **Multi-AZ DB cluster deployment** | 고가용성 + 빠른 장애 조치 | reader 인스턴스와 reader endpoint 제공 |
+| **Read Replica** | 읽기 확장, 리전 간 복제 가능 | 비동기 복제; DR 시 승격 가능 |
 
-### Aurora Global Database
+문제에 **읽기 부하를 primary에서 분리 + reader endpoint + 빠른 failover**가 함께 나오면 Multi-AZ DB cluster다. 단순히 `Multi-AZ`라는 단어만 보고 모든 standby를 읽기용이라고 생각하지 않는다.
 
-하나의 Primary 리전에서 여러 Secondary 리전으로 낮은 지연으로 복제한다. 글로벌 읽기와 리전 재해 복구가 목적이며, 여러 리전에서 동시에 쓰는 구조는 아니다.
+### Aurora·RDS 선택
 
-### Aurora Serverless v2
+- Aurora **cluster endpoint**: writer 연결.
+- Aurora **reader endpoint**: replica에 읽기 연결 분산.
+- Aurora Global Database: 한 primary 리전, 여러 secondary 리전의 낮은 지연 글로벌 읽기·재해 복구.
+- RDS Proxy: Lambda/짧은 연결이 많은 앱의 DB 연결 풀 관리, 장애 조치 영향 감소.
+- 엔진 변경 최소 + 관리 부담 감소: 온프레미스 MySQL/PostgreSQL을 RDS/Aurora로.
+- 이기종 DB 마이그레이션: **SCT로 스키마 변환 + DMS로 데이터 이동**.
 
-트래픽에 맞춰 Aurora 용량을 세밀하게 자동 조절한다. 간헐적이거나 변동이 큰 관계형 DB 워크로드에서 인스턴스 크기를 고정하고 싶지 않을 때 본다.
+### DynamoDB·캐시
 
-### RDS Proxy
+| 신호 | 선택 |
+|---|---|
+| 트래픽 예측 불가, 운영 최소 | DynamoDB On-demand |
+| 예측 가능한 트래픽, 용량 계획 가능 | Provisioned + Auto Scaling |
+| 마이크로초 읽기 캐시 | DAX |
+| 다중 리전 active-active | Global Tables |
+| 항목 변경 이벤트 처리 | DynamoDB Streams + Lambda |
+| 관계형 DB 세션·캐시·순위·분산 잠금 | ElastiCache for Redis |
+| 단순 멀티스레드 캐시, 샤딩 | Memcached |
 
-DB 연결을 Pooling하고 재사용해 Lambda처럼 짧은 연결이 폭증할 때 RDS/Aurora의 연결 부담을 줄인다. 읽기 결과 캐싱 서비스는 아니다.
+읽기 확장을 위해 RDS standby를 고르지 않는다. 관계형 읽기 확장은 Read Replica/Aurora reader, 키-값 초저지연은 DynamoDB/DAX, 반복 조회 캐시는 ElastiCache를 본다.
 
-### DynamoDB Global Tables
+## 네트워크와 글로벌 전송
 
-여러 리전에서 로컬처럼 읽고 쓸 수 있는 Multi-Region, Multi-Active 복제를 제공한다. 리전 간 충돌은 마지막 쓰기 우선 방식으로 해결한다.
+### CloudFront vs Global Accelerator vs Route 53
 
-### DynamoDB DAX
+| 결정 문구 | 정답 |
+|---|---|
+| 정적·동적 웹 콘텐츠, HTTP/HTTPS, edge cache, 오리진 부하 감소 | **CloudFront** |
+| 고정 글로벌 Anycast IP, TCP/UDP, AWS 글로벌 네트워크, 빠른 endpoint failover | **Global Accelerator** |
+| DNS 응답으로 리전 선택, latency/weighted/failover/geolocation 정책 | **Route 53** |
 
-DynamoDB 전용 인메모리 캐시로 읽기 지연을 마이크로초 단위까지 줄인다. 애플리케이션에서 DAX 클라이언트를 사용해야 하며 강력한 일관성이 필요한 읽기에는 맞지 않는다.
+HTTP라고 무조건 CloudFront가 아니다. **캐싱**이 핵심이면 CloudFront, HTTP/HTTPS라도 **고정 글로벌 IP + 멀티리전 장애 조치 + 캐시 불필요**가 핵심이면 Global Accelerator가 더 맞다. 일반 TCP/UDP 애플리케이션에 CloudFront를 고르지 않는다.
 
-### DynamoDB Adaptive Capacity
+시험 암기: **`Global static IP + TCP/UDP + 글로벌 최적 경로` -> Global Accelerator**.
 
-트래픽이 특정 파티션 키에 몰릴 때 파티션별 처리량을 자동 조정한다. 그렇다고 한 개의 극단적인 Hot Key 설계를 해결해 주는 것은 아니다.
+### VPC 사설 연결
 
-### DynamoDB Provisioned vs On-demand
+- S3/DynamoDB를 인터넷·NAT 없이 접근: **Gateway VPC endpoint**. 라우팅 테이블에 경로 추가, 별도 시간 요금 없음.
+- 대부분의 AWS 서비스를 ENI의 사설 IP로 접근: **Interface endpoint(PrivateLink)**. Security Group 적용, 시간·데이터 요금.
+- 특정 서비스만 다른 VPC에 사설 노출, CIDR 중복 가능: **PrivateLink**, 제공 측은 보통 NLB.
+- VPC 전체를 1:1 연결: **VPC Peering**. 비전이성이라 A-B, B-C가 있어도 A-C 통신 불가.
+- 다수 VPC/VPN 중앙 허브: **Transit Gateway**.
 
-트래픽이 안정적이고 예측 가능하며 처리량을 직접 관리해 비용을 최적화하면 Provisioned Capacity를 본다. 트래픽이 불규칙하거나 급증하고 용량 계획 없이 요청당 과금하려면 On-demand가 맞지만, 이전 최고치의 두 배를 갑자기 넘는 급증은 Throttling 가능성을 고려한다.
+### 온프레미스 연결·DNS
 
-### ElastiCache Redis vs Memcached
+- Site-to-Site VPN: 빠르게 구축, 인터넷 기반 암호화 터널.
+- Direct Connect: 전용 회선, 일관된 대역폭·지연. 자체적으로 암호화를 제공한다는 뜻은 아니므로 필요하면 VPN과 결합.
+- 한 DX로 여러 리전 VPC/TGW 접근: Direct Connect Gateway.
+- 온프레미스가 Route 53 Private Hosted Zone을 질의: Resolver **Inbound** endpoint.
+- VPC가 온프레미스 도메인을 질의: Resolver **Outbound** endpoint + forwarding rule.
+- 특정 대도시 근처에서 한 자릿수 ms 지연으로 워크로드 실행: **AWS Local Zones**. CloudFront처럼 캐시만 두는 서비스가 아니다.
 
-Valkey/Redis OSS는 복제, Multi-AZ, 자동 장애 조치, 백업·복원, 영속성, 복잡한 자료구조가 필요할 때 선택한다. Memcached는 복제나 영속성 없이 노드 장애 시 데이터가 사라져도 되는 단순 멀티스레드 분산 캐시에 어울린다.
+### 보안 경계
 
-## 메시징과 이벤트
+- Security Group: ENI/인스턴스 수준, stateful, allow 규칙만.
+- Network ACL: subnet 수준, stateless, allow/deny, 요청·응답 양방향 규칙.
+- NAT Gateway는 private subnet의 **아웃바운드 인터넷**용이지 외부에서 들어오는 연결을 허용하지 않는다.
 
-### SQS FIFO Message Group ID
+## 메시징, 이벤트, 스트리밍
 
-같은 Message Group 안에서만 순서를 보장한다. 서로 다른 Group ID를 사용하면 FIFO Queue에서도 여러 메시지를 병렬 처리할 수 있다. Message Deduplication ID나 Content-based Deduplication은 5분의 중복 제거 구간에 적용되며, 소비자 처리까지 무조건 한 번만 실행된다는 뜻은 아니므로 멱등성은 여전히 챙긴다.
+### SNS와 SQS를 분리해서 생각
 
-### SQS Standard와 멱등성
+- **SNS**: push pub/sub, 한 이벤트를 여러 구독자에게 fan-out.
+- **SQS**: 큐에 쌓아 소비 속도를 조절, 생산자와 소비자를 decouple, 재시도·DLQ.
+- 여러 서비스가 같은 이벤트를 각자 안정적으로 처리: **SNS topic -> 서비스별 SQS queue -> consumer**.
+- DB가 순간 폭주를 감당하지 못함: SNS에서 Lambda를 바로 폭증시키기보다 **SQS로 버퍼링**하고 소비 동시성을 제한.
+- `Standard queue`는 매우 높은 처리량, at-least-once, best-effort ordering이므로 소비자를 멱등하게 만든다.
+- 순서와 중복 제거가 필수: FIFO queue. `MessageGroupId`가 같은 메시지 안에서 순서가 보장된다.
 
-Standard Queue는 At-least-once 전달이라 같은 메시지가 다시 도착할 수 있고 순서도 보장하지 않는다. 메시지 처리 결과를 중복 적용하지 않도록 요청 ID나 비즈니스 키를 이용해 소비자를 멱등하게 만든다.
+### EventBridge·Step Functions
 
-### SQS Dead-letter Queue Redrive
+- AWS 서비스/SaaS/커스텀 이벤트를 규칙으로 라우팅: EventBridge.
+- 과거 이벤트를 다시 처리: EventBridge Archive and Replay.
+- 여러 단계, 분기, 재시도, 병렬 처리, 사람 승인 등의 워크플로: Step Functions.
+- 단순 fan-out이면 SNS, 소비 속도 조절이면 SQS, 이벤트 규칙 기반 라우팅이면 EventBridge다.
 
-여러 번 처리에 실패한 메시지를 DLQ로 보내 격리하고, 원인을 해결한 뒤 원본 Queue로 다시 이동시킨다. DLQ의 보존 기간은 원본보다 길게 잡는 편이 안전하다.
+### Kinesis Data Streams vs Data Firehose
 
-### SNS Subscription Filter Policy
+| 요구 | 선택 |
+|---|---|
+| 소비자가 직접 읽고 재처리, shard·순서·체크포인트, 실시간 앱 | **Kinesis Data Streams** |
+| S3/Redshift/OpenSearch 등에 관리형으로 버퍼링·변환·배달 | **Amazon Data Firehose** |
+| Kafka API·생태계가 필요 | Amazon MSK |
 
-SNS Topic의 모든 메시지를 모든 구독자에게 보내지 않고 메시지 속성이나 본문을 기준으로 필요한 구독에만 전달한다.
-
-### EventBridge Archive and Replay
-
-Event Bus의 이벤트를 보관하고 특정 기간의 이벤트를 나중에 다시 재생한다. 장애 수정 후 이벤트를 재처리해야 한다는 요구에 맞는다.
-
-### Kinesis Data Streams vs Amazon Data Firehose
-
-Streams는 여러 소비자가 실시간으로 직접 처리하고 재생해야 할 때 사용한다. Firehose는 스트리밍 데이터를 S3, Redshift, OpenSearch 등으로 최소 운영 부담으로 전달할 때 사용한다.
-
-### SQS vs Kinesis Data Streams / Amazon MSK
-
-작업을 한 소비자에게 분배하고 생산자와 소비자를 느슨하게 결합하면 SQS다. 여러 소비자가 같은 이벤트를 독립적으로 읽고 순서·보존·재처리가 필요한 스트림이면 Kinesis Data Streams, Kafka 호환 생태계가 명시되면 Amazon MSK를 본다.
-
-### API Gateway Private API
-
-인터넷에 공개하지 않고 Interface VPC Endpoint를 통해서만 호출하는 REST API다. 리소스 정책으로 허용할 VPC나 VPC Endpoint를 제한한다.
-
-## 보안과 거버넌스
-
-### KMS Key Policy
-
-KMS Key 접근 제어의 핵심 정책이다. IAM Policy에 Allow가 있어도 Key Policy가 계정의 IAM 권한 사용을 허용하지 않으면 접근하지 못할 수 있다.
-
-### KMS Grant
-
-AWS 서비스나 애플리케이션에 KMS Key 사용 권한을 동적으로 위임한다. 임시 또는 세밀한 위임이 필요하고 Key Policy를 계속 수정하고 싶지 않을 때 사용한다.
-
-### STS External ID
-
-외부 SaaS 업체가 여러 고객 계정의 Role을 Assume할 때 Confused Deputy 문제를 막는다. 제3자에게 Role ARN과 함께 고객별 External ID를 사용하게 한다.
-
-### Secrets Manager vs Parameter Store
-
-DB 자격 증명이나 API Key를 저장하면서 자동 교체, 교차 리전 복제, 세밀한 감사가 필요하면 Secrets Manager를 본다. Parameter Store는 `String`, `StringList`, KMS로 암호화하는 `SecureString`을 지원하지만 기본 자동 교체 기능은 없어서 일반 설정값이나 저렴한 암호화 저장에 어울린다.
-
-### SSE-S3 vs SSE-KMS
-
-별도 키 관리 요구 없이 S3 기본 저장 암호화만 필요하면 추가 비용 없는 SSE-S3를 쓴다. 키 정책으로 접근을 제어하거나 키 사용을 CloudTrail에서 감사하고 고객 관리 키·교차 계정 접근이 필요하면 SSE-KMS를 본다.
-
-### AWS RAM (Resource Access Manager)
-
-Organizations 안의 다른 계정과 Subnet, Transit Gateway, Route 53 Resolver Rule 같은 지원 자원을 공유한다. 자원을 각 계정에 중복 생성하지 않고 중앙 관리할 때 사용한다.
-
-### AWS Backup Vault Lock
-
-백업 보존 정책을 WORM 방식으로 강제해 랜섬웨어나 관리자 실수로 인한 삭제를 막는다. Compliance Mode는 유예 기간이 지나면 AWS도 잠금을 제거할 수 없다.
-
-### GuardDuty vs Inspector vs Macie
-
-GuardDuty는 계정과 네트워크의 위협 탐지, Inspector는 EC2·컨테이너 이미지·Lambda의 취약점 관리, Macie는 S3의 민감 데이터 발견이 핵심이다.
-
-### WAF vs Shield Advanced vs Firewall Manager
-
-WAF는 HTTP 요청을 검사해 IP·국가 기반 차단, SQL Injection, XSS 같은 웹 공격을 막는다. Shield Standard는 모든 계정에 기본 포함된 네트워크·전송 계층 DDoS 보호이고, Shield Advanced는 강화된 DDoS 대응과 비용 보호를 제공한다. Firewall Manager는 Organizations 여러 계정에 이 정책들을 중앙 배포한다.
-
-### SCP와 Permission Boundary
-
-SCP는 Organization의 계정 또는 OU 전체가 가질 수 있는 권한의 최대치를 제한한다. Permission Boundary는 특정 IAM User/Role이 가질 수 있는 권한의 최대치를 제한한다. 둘 다 권한을 직접 부여하지 않는다.
-
-## 복구 전략과 비용
-
-### RPO vs RTO
-
-RPO는 장애 시 허용 가능한 **데이터 손실 시간**, RTO는 서비스를 다시 살릴 때까지 허용 가능한 **복구 시간**이다.
-
-### Backup and Restore
-
-평소에는 백업만 유지하다 장애 후 인프라를 복원한다. 가장 저렴하지만 RTO와 RPO가 가장 길다.
-
-### Pilot Light
-
-핵심 데이터 계층만 다른 리전에 항상 작게 실행하고 애플리케이션 서버는 장애 시 확장한다. Backup and Restore보다 빠르고 Warm Standby보다 저렴하다.
-
-### Warm Standby
-
-전체 시스템의 축소판을 다른 리전에 항상 실행하고 장애 시 확장한다. Pilot Light보다 빠르게 복구하지만 평상시 비용이 더 든다.
-
-### Multi-Site Active/Active
-
-여러 리전에서 전체 시스템을 동시에 서비스한다. RTO가 가장 짧지만 비용과 데이터 일관성 설계 난도가 가장 높다.
-
-### Compute Savings Plans vs EC2 Instance Savings Plans
-
-Compute Savings Plans는 EC2 인스턴스 패밀리·리전뿐 아니라 Fargate와 Lambda까지 유연하게 적용된다. EC2 Instance Savings Plans는 특정 리전과 인스턴스 패밀리를 약정하는 대신 할인 폭이 더 크다.
-
-### On-demand vs Spot vs Savings Plans vs Dedicated Host
-
-약정 없이 중단되면 안 되는 단기·불규칙 워크로드는 On-demand, 중단 가능한 배치 작업의 최대 비용 절감은 Spot이다. 지속적인 사용 금액을 1년 또는 3년 약정하면 Savings Plans, 물리 서버 격리나 소켓·코어 기반 라이선스가 필요하면 Dedicated Host를 본다.
-
----
-
-> 이후 추가 형식: 기본 정의는 빼고, 문제의 결정 조건과 헷갈리는 서비스 차이만 2~3문장으로 적는다.
+암기: **Data Streams = Kafka처럼 스트림을 보관하고 소비자가 읽음**, **Firehose = 목적지로 알아서 적재하는 파이프라인**. Firehose는 일반적인 메시지 큐 대체가 아니다.
+
+## 보안, 계정, 규정 준수
+
+### 교차 계정과 Organizations
+
+- 개발 계정 사용자가 운영 계정 S3에 접근: 운영 계정에 IAM user를 새로 만들지 말고 **운영 계정 IAM Role의 trust policy가 개발 계정을 신뢰**하게 한다. 개발 사용자는 `AssumeRole`로 최소 권한 임시 자격 증명을 얻는다.
+- AWS 계정 ID를 수십 개 나열하지 않고 조직 전체만 허용: 리소스 정책의 **`aws:PrincipalOrgID`**.
+- 특정 OU 경로만 제한: `aws:PrincipalOrgPaths`.
+- SCP는 Organizations 계정의 **최대 권한 경계**이며 권한을 직접 부여하지 않는다.
+- Permissions boundary는 특정 IAM principal이 가질 수 있는 최대 권한을 제한하며 역시 권한을 직접 부여하지 않는다.
+
+### SSO와 Microsoft AD
+
+**온프레미스 Microsoft AD의 사용자·그룹을 계속 관리 + 여러 AWS 계정 SSO** 조건이면:
+
+`IAM Identity Center + AWS Managed Microsoft AD + self-managed AD와 two-way forest trust`
+
+계정마다 IAM user를 복제하는 선택지는 운영 부담과 보안 측면에서 탈락한다.
+
+### Config vs CloudTrail vs CloudWatch
+
+| 질문 | 서비스 |
+|---|---|
+| 누가 언제 어떤 API로 설정을 바꿨나 | **CloudTrail** |
+| 리소스 구성이 원하는 상태인가, 변경 이력·규칙 준수 여부 | **AWS Config** |
+| 비준수 리소스를 자동 수정 | **AWS Config rule + Systems Manager Automation** |
+| 지표·로그·알람·대시보드 | **CloudWatch** |
+| AWS 계정 없는 외부인에게 대시보드만 공유 | **CloudWatch Dashboard Sharing** |
+
+오답 메모: **“누가 바꿨나” -> CloudTrail**, **“올바른 설정인가를 지속 평가” -> Config**. 암호화되지 않은 볼륨을 자동으로 찾아 고치는 문제는 Config가 탐지하고 SSM Automation이 수정하며, 실행 역할에는 필요한 IAM 권한만 준다.
+
+### 보안 서비스 한 줄 판별
+
+- GuardDuty: CloudTrail/VPC Flow Logs/DNS 등의 신호로 위협 탐지.
+- Inspector: EC2·컨테이너 이미지·Lambda의 취약점 관리.
+- Macie: S3의 민감 데이터 발견·분류.
+- Rekognition: 이미지·동영상 분석, 부적절 콘텐츠 탐지.
+- Comprehend: 텍스트의 감정·엔터티·주제·언어 분석.
+- WAF: HTTP(S) Layer 7 규칙, SQL injection/XSS/IP 제어.
+- Shield Advanced: DDoS 보호 강화와 비용 보호·지원.
+- Firewall Manager: Organizations 전반의 WAF/Shield/보안 정책 중앙 관리.
+
+## 비용, 모니터링, 재해 복구
+
+### 비용 도구
+
+| 요구 | 선택 |
+|---|---|
+| 서비스·리전·인스턴스 타입 등으로 비용 추세 분석 | **Cost Explorer** |
+| 예산/사용량 임계치 초과 알림 | **AWS Budgets** |
+| 가장 상세한 원천 청구·사용 데이터 | **Cost and Usage Report(CUR)** |
+| 전체 청구 현황을 간단히 확인 | Billing Dashboard |
+
+`EC2 비용이 왜 늘었는지, 최근 2개월을 instance type별로 분석, least operational overhead` -> **Cost Explorer**. CUR + S3 + Athena/QuickSight는 더 세밀하지만 구축이 필요하므로 “최소 운영 부담”에서는 밀릴 수 있다.
+
+### 모니터링·로그
+
+- CloudWatch metric/alarm: 수치 임계치와 알림.
+- CloudWatch Logs: 애플리케이션·시스템 로그 수집 및 Logs Insights 쿼리.
+- S3의 JSON/CSV 로그를 간단한 SQL로 즉시 분석: **Athena**.
+- X-Ray: 분산 애플리케이션 요청 추적과 병목 분석.
+- CloudTrail: AWS API 감사. 조직 전체는 organization trail.
+
+### DR 전략
+
+| 전략 | 비용 | RTO/RPO | 결정 문구 |
+|---|---:|---|---|
+| Backup & Restore | 최저 | 가장 김 | 평소 컴퓨팅 없음, 백업에서 복원 |
+| Pilot Light | 낮음 | 김 | 핵심 DB/데이터만 항상 실행 |
+| Warm Standby | 중간 | 짧음 | 축소 환경이 실행 중, 장애 시 scale out |
+| Multi-Site Active/Active | 최고 | 가장 짧음 | 양쪽이 실제 트래픽 처리 |
+
+- RPO: 얼마나 많은 데이터 손실을 허용하는가.
+- RTO: 얼마나 오래 중단을 허용하는가.
+- 백업 주기·복제 방식은 RPO를, 프로비저닝·전환 시간은 RTO를 결정한다.
+- Route 53 failover, Global Accelerator endpoint health, Aurora Global Database 같은 선택지는 요구 프로토콜·고정 IP·DB 엔진까지 함께 본다.
+
+## 자주 틀리는 결정타 25개
+
+1. `Windows + SMB + IIS/NAS` -> FSx for Windows File Server.
+2. `Linux + NFS + 여러 AZ 공유` -> EFS.
+3. `HPC/ML + S3 병렬 처리` -> FSx for Lustre.
+4. `global static IP + TCP/UDP` -> Global Accelerator.
+5. `웹 콘텐츠 캐시 + HTTP/HTTPS` -> CloudFront.
+6. `DNS 기반 가까운 리전/가중치/장애 조치` -> Route 53 routing policy.
+7. `S3/DynamoDB + private + NAT 없음` -> Gateway endpoint.
+8. `특정 서비스만 사설 노출 + CIDR 중복` -> PrivateLink.
+9. `조직 전체 계정만 허용` -> `aws:PrincipalOrgID`.
+10. `교차 계정 임시 권한` -> trust policy + AssumeRole.
+11. `Multi-AZ DB instance` -> HA, standby 읽기 불가.
+12. `Multi-AZ DB cluster + reader endpoint` -> HA + 읽기 분산.
+13. `항상 켜지는 baseline` -> RI/Savings Plans.
+14. `중단 가능 + 짧고 탄력적` -> Spot.
+15. `gp3` -> 용량과 IOPS/처리량을 독립 조정.
+16. `unpredictable S3 access` -> Intelligent-Tiering.
+17. `부적절한 이미지` -> Rekognition; 텍스트 분석은 Comprehend.
+18. `비준수 탐지 + 자동 수정` -> Config + SSM Automation.
+19. `누가 API 변경` -> CloudTrail; `현재 구성이 준수` -> Config.
+20. `비용 원인 필터 분석` -> Cost Explorer; `초과 알림` -> Budgets.
+21. `burst를 DB 앞에서 완충` -> SQS.
+22. `한 이벤트를 여러 서비스로` -> SNS + 서비스별 SQS.
+23. `스트림 직접 소비·재처리` -> Kinesis Data Streams.
+24. `스트림을 S3/Redshift/OpenSearch로 배달` -> Data Firehose.
+25. `AWS 계정 없는 사람에게 대시보드만` -> CloudWatch Dashboard Sharing.
+
+## 마지막 30초 오답 제거
+
+- 문제의 형용사 하나를 놓치지 않는다: `least`, `most`, `immediately`, `unpredictable`, `without internet`, `static IP`, `no code changes`.
+- 요구사항을 하나라도 못 맞추면 익숙한 서비스여도 제거한다.
+- 관리형 기능이 있는데 EC2에 직접 설치·cron·사용자 코드를 만드는 답은 `least operational overhead`에서 의심한다.
+- 고가용성은 백업만으로 해결되지 않고, 읽기 확장은 standby만으로 해결되지 않는다.
+- DNS, 캐시, 네트워크 가속을 섞지 않는다: Route 53 / CloudFront / Global Accelerator.
+- 인증과 권한을 섞지 않는다: Identity Center는 SSO, IAM Role은 임시 권한, KMS key policy는 암호화 키 사용 권한.
+- 데이터 형식을 본다: 객체는 S3, 블록은 EBS, Linux 공유 파일은 EFS, Windows SMB는 FSx for Windows.
+- 실시간이라는 말만 보고 Kinesis를 고르지 않는다. fan-out, 버퍼링, 재처리, 목적지 적재 중 무엇이 필요한지 먼저 정한다.
+
+## 참고한 공식 문서
+
+- [Amazon S3 서버 측 암호화](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html)
+- [RDS Multi-AZ DB cluster 연결과 reader endpoint](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/multi-az-db-clusters-concepts-connection-management.html)
+- [AWS Global Accelerator 동작 방식](https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html)
+- [Amazon SQS queue types](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-types.html)
+- [AWS Config 비준수 리소스 수정](https://docs.aws.amazon.com/config/latest/developerguide/remediation.html)
+- [Amazon FSx for Windows File Server](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html)
+- [Amazon Data Firehose 데이터 전송](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html)
