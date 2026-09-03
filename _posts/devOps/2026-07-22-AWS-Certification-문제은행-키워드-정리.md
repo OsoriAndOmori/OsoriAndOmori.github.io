@@ -1,16 +1,21 @@
 ---
-title: AWS SAA-C03 문제은행 결정 키워드 정리
+title: AWS SAA-C03 (합격) 1편 — 문제은행 결정 키워드 정리
 author: OsoriAndOmori
 date: 2026-07-22 12:00:00 +0900
-last_modified_at: 2026-08-15 18:00:00 +0900
+last_modified_at: 2026-09-03 12:00:00 +0900
 categories: [Blogging, DevOps]
 tags: [aws, cloud, saa-c03, certification, exam]
 toc: true
 ---
 
+> **SAA-C03 합격 기록 시리즈**
+> 1편 (이 글) — 문제은행을 훑으며 정답을 가르는 키워드와 오답 제거 기준을 정리한 초반 연구 노트
+> [2편 — 막판 오답 노트](https://osoriandomori.github.io/posts/AWS-SAA-C03-%EC%98%A4%EB%8B%B5%EB%85%B8%ED%8A%B8/) — 시험 직전 틀린 것만 추려 압축한 암기용
+{: .prompt-tip }
+
 AWS Solutions Architect Associate(SAA-C03) 문제은행 **684문항**과 정답 해설, 직접 틀린 문제 메모를 기준으로 다시 정리했다. 서비스 설명을 사전처럼 나열하기보다, 문제의 조건에서 **정답을 결정하는 표현**과 **비슷한 오답을 제거하는 기준**에 집중한다.
 
-인쇄해서 볼 수 있는 [14페이지 PDF 학습 노트](/output/pdf/AWS-SAA-C03-문제은행-결정-키워드.pdf)도 함께 만들었다.
+인쇄해서 볼 수 있는 [14페이지 PDF 학습 노트](/assets/files/AWS-SAA-C03-%EB%AC%B8%EC%A0%9C%EC%9D%80%ED%96%89-%EA%B2%B0%EC%A0%95-%ED%82%A4%EC%9B%8C%EB%93%9C.pdf)도 함께 만들었다.
 
 > 이 글의 숫자는 제공된 문제 PDF에서 서비스명이 등장한 문항 수를 단순 집계한 값이다. 한 문항에 정답과 오답 서비스가 함께 있으므로 출제 비중의 절대값이 아니라, 복습 우선순위를 잡는 지표로만 본다.
 
