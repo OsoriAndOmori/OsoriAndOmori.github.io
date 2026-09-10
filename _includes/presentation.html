@@ -63,6 +63,17 @@
     border-bottom: 2px solid var(--main-border-color, #dee2e6);
   }
   .pres-slide h3 { font-size: 1.4rem; margin: 1.2em 0 0.5em; }
+  /* deck (`.slides-src`) uses h4 as the slide title */
+  .pres-slide h4 {
+    font-size: 2rem;
+    line-height: 1.3;
+    margin: 0 0 0.9em;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid var(--main-border-color, #dee2e6);
+    color: var(--heading-color, inherit);
+  }
+  .pres-slide ul, .pres-slide ol { padding-left: 1.2em; }
+  .pres-slide li { margin: 0.55em 0; }
   .pres-slide img, .pres-slide svg { max-width: 100%; height: auto; }
   .pres-slide table { font-size: 0.9em; }
   .pres-slide pre { font-size: 0.8em; }
@@ -119,36 +130,63 @@
 
     var overlay, stage, slidesWrap, countEl, slides = [], idx = 0;
 
-    function buildSlides() {
-      var clone = src.cloneNode(true);
-      clone.querySelectorAll('img[data-src]').forEach(function (img) {
+    function newSlide() {
+      var s = document.createElement('section');
+      s.className = 'pres-slide';
+      return s;
+    }
+    function loadLazyImgs(root) {
+      root.querySelectorAll('img[data-src]').forEach(function (img) {
         img.src = img.getAttribute('data-src');
         img.removeAttribute('data-src');
       });
+    }
+    function keepSlide(b) {
+      return b.textContent.trim() !== '' || b.querySelector('img,svg');
+    }
 
+    function buildSlides() {
+      var deck = document.querySelector('.slides-src');
+      return deck ? fromDeck(deck) : fromContent();
+    }
+
+    /* Preferred: an authored deck. Slides split on <hr> ("---"). */
+    function fromDeck(deck) {
+      var clone = deck.cloneNode(true);
+      loadLazyImgs(clone);
+      var buckets = [], cur = newSlide();
+      buckets.push(cur);
+      Array.prototype.slice.call(clone.childNodes).forEach(function (n) {
+        if (n.nodeType === 1 && n.tagName === 'HR') {
+          cur = newSlide();
+          buckets.push(cur);
+          return;
+        }
+        cur.appendChild(n);
+      });
+      return buckets.filter(keepSlide);
+    }
+
+    /* Fallback: split the full post at each <h2>. */
+    function fromContent() {
+      var clone = src.cloneNode(true);
+      loadLazyImgs(clone);
       var titleEl = document.querySelector('h1[data-toc-skip]');
-      var buckets = [];
-      var cur = document.createElement('section');
-      cur.className = 'pres-slide';
+      var buckets = [], cur = newSlide();
       if (titleEl) {
         var h = document.createElement('h1');
         h.textContent = titleEl.textContent.trim();
         cur.appendChild(h);
       }
       buckets.push(cur);
-
       Array.prototype.slice.call(clone.childNodes).forEach(function (n) {
         if (n.nodeType === 1 && n.tagName === 'H2') {
-          cur = document.createElement('section');
-          cur.className = 'pres-slide';
+          cur = newSlide();
           buckets.push(cur);
         }
         cur.appendChild(n);
       });
-
-      return buckets.filter(function (b) {
-        return b.textContent.trim() !== '' || b.querySelector('img,svg');
-      });
+      return buckets.filter(keepSlide);
     }
 
     function mk(txt, label) {
