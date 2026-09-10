@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <filter id="blur" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="720" height="360" rx="10" fill="#f7f6f2"/>
+
+  <!-- Row 1: single topic -->
+  <text x="40" y="46" font-size="13" font-weight="700" fill="#222">단일 주제 텍스트</text>
+  <rect x="40" y="56" width="300" height="86" rx="4" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <text x="52" y="78" font-size="11" fill="#555">"결제창에서 500 에러 발생.</text>
+  <text x="52" y="96" font-size="11" fill="#555"> Timeout 3000ms 초과 로그 확인."</text>
+  <rect x="52" y="110" width="180" height="6" rx="3" fill="#d7dbe0"/>
+  <rect x="52" y="122" width="230" height="6" rx="3" fill="#d7dbe0"/>
+
+  <path d="M360 99 L440 99" stroke="#555" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+
+  <text x="470" y="70" font-size="12.5" font-weight="700" fill="#222">뚜렷한 벡터</text>
+  <circle cx="530" cy="102" r="17" fill="#2f9aa6" stroke="#333" stroke-width="1.5"/>
+  <text x="470" y="150" font-size="10.5" fill="#777">특징이 선명하게 보존됨</text>
+
+  <line x1="40" y1="185" x2="680" y2="185" stroke="#e0ded7" stroke-width="1"/>
+
+  <!-- Row 2: mixed topics -->
+  <text x="40" y="222" font-size="13" font-weight="700" fill="#222">여러 주제가 섞인 텍스트 (티켓 전체)</text>
+  <rect x="40" y="232" width="330" height="104" rx="4" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <g font-size="10.5">
+    <rect x="52" y="244" width="52" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="78" y="257" text-anchor="middle" fill="#33526f">증상</text>
+    <rect x="112" y="244" width="70" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="147" y="257" text-anchor="middle" fill="#33526f">원인분석</text>
+    <rect x="190" y="244" width="86" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="233" y="257" text-anchor="middle" fill="#33526f">댓글 20개</text>
+    <rect x="284" y="244" width="52" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="310" y="257" text-anchor="middle" fill="#33526f">일정</text>
+    <rect x="52" y="270" width="66" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="85" y="283" text-anchor="middle" fill="#33526f">인사말</text>
+    <rect x="126" y="270" width="60" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="156" y="283" text-anchor="middle" fill="#33526f">해결책</text>
+    <rect x="194" y="270" width="76" height="18" rx="9" fill="#e8eef5" stroke="#9db6d0"/>
+    <text x="232" y="283" text-anchor="middle" fill="#33526f">로그첨부</text>
+  </g>
+  <rect x="52" y="300" width="300" height="6" rx="3" fill="#d7dbe0"/>
+  <rect x="52" y="312" width="270" height="6" rx="3" fill="#d7dbe0"/>
+
+  <path d="M390 284 L460 284" stroke="#555" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+
+  <text x="486" y="238" font-size="12.5" font-weight="700" fill="#222">흐릿한 평균 벡터</text>
+  <circle cx="556" cy="288" r="34" fill="#7b78c4" filter="url(#blur)"/>
+  <text x="486" y="336" font-size="10.5" fill="#777">주제가 뒤섞여 특징이 희석됨</text>
+</svg>
