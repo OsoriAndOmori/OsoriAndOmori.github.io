@@ -12,6 +12,9 @@
 _site
 vendor
 
+# local build / scratch output
+output
+
 # rubygem
 *.gem
 
