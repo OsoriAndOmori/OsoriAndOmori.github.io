@@ -1,0 +1,243 @@
+{% comment %}
+  Per-post reader "presentation mode".
+  Enable by adding `presentation: true` to a post's front matter.
+  Splits .post-content into slides at each <h2>; keyboard + click navigation.
+{% endcomment %}
+<style>
+  .pres-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0.3rem 0 0.7rem;
+    padding: 0.35em 0.85em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text-color, #1b1b1e);
+    background: var(--card-bg, #f6f8fa);
+    border: 1px solid var(--main-border-color, #dee2e6);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+  .pres-launch:hover { filter: brightness(0.95); }
+
+  #pres-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: var(--main-wrapper-bg, #fff);
+    color: var(--text-color, #1b1b1e);
+    display: flex;
+    flex-direction: column;
+  }
+  #pres-overlay[hidden] { display: none; }
+
+  .pres-stage {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    padding: 4vh 5vw 12vh;
+    cursor: pointer;
+  }
+  .pres-slide {
+    width: min(960px, 100%);
+    margin: auto 0;
+    font-size: 1.25rem;
+    line-height: 1.7;
+  }
+  .pres-slide > *:first-child { margin-top: 0; }
+  .pres-slide h1 {
+    font-size: 2.4rem;
+    line-height: 1.25;
+    margin: 0.1em 0 0.6em;
+    color: var(--heading-color, inherit);
+  }
+  .pres-slide h2 {
+    font-size: 2rem;
+    line-height: 1.3;
+    margin: 0 0 0.8em;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid var(--main-border-color, #dee2e6);
+  }
+  .pres-slide h3 { font-size: 1.4rem; margin: 1.2em 0 0.5em; }
+  .pres-slide img, .pres-slide svg { max-width: 100%; height: auto; }
+  .pres-slide table { font-size: 0.9em; }
+  .pres-slide pre { font-size: 0.8em; }
+  .pres-slide pre.unloaded,
+  .pres-slide code.language-mermaid { display: none; }
+  .pres-slide .mermaid { text-align: center; }
+  .pres-slide .mermaid svg { max-width: 100%; }
+
+  .pres-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.6rem;
+    background: var(--main-wrapper-bg, #fff);
+    border-top: 1px solid var(--main-border-color, #dee2e6);
+  }
+  .pres-bar button {
+    min-width: 2.4rem;
+    height: 2.4rem;
+    padding: 0 0.7rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color, #1b1b1e);
+    background: var(--card-bg, #f6f8fa);
+    border: 1px solid var(--main-border-color, #dee2e6);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .pres-bar button:hover { filter: brightness(0.95); }
+  .pres-count {
+    font-variant-numeric: tabular-nums;
+    min-width: 4.5rem;
+    text-align: center;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 600px) {
+    .pres-slide { font-size: 1.05rem; }
+    .pres-slide h1 { font-size: 1.9rem; }
+    .pres-slide h2 { font-size: 1.55rem; }
+  }
+</style>
+
+<script>
+  (function () {
+    var launchBtn = document.getElementById('pres-launch');
+    var src = document.querySelector('.post-content');
+    if (!launchBtn || !src) return;
+
+    var overlay, stage, slidesWrap, countEl, slides = [], idx = 0;
+
+    function buildSlides() {
+      var clone = src.cloneNode(true);
+      clone.querySelectorAll('img[data-src]').forEach(function (img) {
+        img.src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+      });
+
+      var titleEl = document.querySelector('h1[data-toc-skip]');
+      var buckets = [];
+      var cur = document.createElement('section');
+      cur.className = 'pres-slide';
+      if (titleEl) {
+        var h = document.createElement('h1');
+        h.textContent = titleEl.textContent.trim();
+        cur.appendChild(h);
+      }
+      buckets.push(cur);
+
+      Array.prototype.slice.call(clone.childNodes).forEach(function (n) {
+        if (n.nodeType === 1 && n.tagName === 'H2') {
+          cur = document.createElement('section');
+          cur.className = 'pres-slide';
+          buckets.push(cur);
+        }
+        cur.appendChild(n);
+      });
+
+      return buckets.filter(function (b) {
+        return b.textContent.trim() !== '' || b.querySelector('img,svg');
+      });
+    }
+
+    function mk(txt, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = txt;
+      b.setAttribute('aria-label', label);
+      return b;
+    }
+    function stop(fn) {
+      return function (e) { e.stopPropagation(); fn(); };
+    }
+
+    function render() {
+      overlay = document.createElement('div');
+      overlay.id = 'pres-overlay';
+      overlay.hidden = true;
+
+      stage = document.createElement('div');
+      stage.className = 'pres-stage';
+      slidesWrap = document.createElement('div');
+      slidesWrap.style.cssText = 'width:100%;display:flex;justify-content:center';
+      stage.appendChild(slidesWrap);
+
+      var bar = document.createElement('div');
+      bar.className = 'pres-bar';
+      var prev = mk('‹', '이전');
+      var next = mk('›', '다음');
+      var fs = mk('⛶', '전체화면');
+      var close = mk('✕', '종료');
+      countEl = document.createElement('span');
+      countEl.className = 'pres-count';
+      bar.append(prev, countEl, next, fs, close);
+
+      overlay.append(stage, bar);
+      document.body.appendChild(overlay);
+
+      stage.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        if (String(window.getSelection())) return;
+        go(idx + 1);
+      });
+      prev.addEventListener('click', stop(function () { go(idx - 1); }));
+      next.addEventListener('click', stop(function () { go(idx + 1); }));
+      fs.addEventListener('click', stop(toggleFs));
+      close.addEventListener('click', stop(exit));
+    }
+
+    function go(i) {
+      idx = Math.max(0, Math.min(i, slides.length - 1));
+      slides.forEach(function (s, k) { s.style.display = k === idx ? '' : 'none'; });
+      countEl.textContent = (idx + 1) + ' / ' + slides.length;
+      stage.scrollTop = 0;
+    }
+
+    function enter() {
+      if (!overlay) render();
+      if (!slides.length) {
+        slides = buildSlides();
+        slides.forEach(function (s) { slidesWrap.appendChild(s); });
+      }
+      overlay.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      go(0);
+      document.addEventListener('keydown', onKey);
+    }
+    function exit() {
+      overlay.hidden = true;
+      document.documentElement.style.overflow = '';
+      document.removeEventListener('keydown', onKey);
+      if (document.fullscreenElement) document.exitFullscreen();
+    }
+    function toggleFs() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (overlay.requestFullscreen) overlay.requestFullscreen();
+    }
+    function onKey(e) {
+      switch (e.key) {
+        case 'ArrowRight': case 'PageDown': case ' ':
+          e.preventDefault(); go(idx + 1); break;
+        case 'ArrowLeft': case 'PageUp': case 'Backspace':
+          e.preventDefault(); go(idx - 1); break;
+        case 'Home': go(0); break;
+        case 'End': go(slides.length - 1); break;
+        case 'f': case 'F': toggleFs(); break;
+        case 'Escape': exit(); break;
+      }
+    }
+
+    launchBtn.addEventListener('click', enter);
+  })();
+</script>
