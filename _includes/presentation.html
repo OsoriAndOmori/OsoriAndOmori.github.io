@@ -189,6 +189,35 @@
       return buckets.filter(keepSlide);
     }
 
+    /* mermaid.html skips code blocks inside .slides-src (rendering while
+       display:none produces a broken/tiny SVG). Render them here instead,
+       now that the cloned nodes are about to be shown. */
+    function hydrateMermaid(root) {
+      var blocks = Array.prototype.slice.call(root.querySelectorAll('pre > code.language-mermaid'));
+      if (!blocks.length || typeof mermaid === 'undefined' || !mermaid.render) {
+        return Promise.resolve();
+      }
+      var n = 0;
+      return Promise.all(blocks.map(function (code) {
+        var pre = code.parentElement;
+        var src = code.textContent;
+        var id = 'pres-mermaid-' + Date.now() + '-' + (n++);
+        return new Promise(function (resolve) {
+          try {
+            mermaid.render(id, src, function (svgCode) {
+              var div = document.createElement('div');
+              div.className = 'mermaid';
+              div.innerHTML = svgCode;
+              pre.replaceWith(div);
+              resolve();
+            });
+          } catch (e) {
+            resolve();
+          }
+        });
+      }));
+    }
+
     function mk(txt, label) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -244,14 +273,18 @@
 
     function enter() {
       if (!overlay) render();
+      var ready = Promise.resolve();
       if (!slides.length) {
         slides = buildSlides();
         slides.forEach(function (s) { slidesWrap.appendChild(s); });
+        ready = hydrateMermaid(slidesWrap);
       }
-      overlay.hidden = false;
-      document.documentElement.style.overflow = 'hidden';
-      go(0);
-      document.addEventListener('keydown', onKey);
+      ready.then(function () {
+        overlay.hidden = false;
+        document.documentElement.style.overflow = 'hidden';
+        go(0);
+        document.addEventListener('keydown', onKey);
+      });
     }
     function exit() {
       overlay.hidden = true;

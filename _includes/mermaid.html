@@ -44,7 +44,12 @@
     };
 
     /* Markdown converts to HTML */
-    $("pre").has("code.language-mermaid").each(function() {
+    /* Skip blocks inside a hidden presentation deck (.slides-src) — rendering
+       mermaid while its container is display:none produces a broken/tiny SVG.
+       presentation.html renders those itself once the deck becomes visible. */
+    $("pre").has("code.language-mermaid").not(function() {
+      return $(this).closest(".slides-src").length > 0;
+    }).each(function() {
       let svgCode = $(this).children().html();
       $(this).addClass("unloaded");
       $(this).after(`<div class=\"mermaid\">${svgCode}</div>`);
