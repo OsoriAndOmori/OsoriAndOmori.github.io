@@ -198,13 +198,23 @@
         return Promise.resolve();
       }
       var n = 0;
-      return Promise.all(blocks.map(function (code) {
-        var pre = code.parentElement;
-        var src = code.textContent;
+      function attempt(pre, src, triesLeft) {
         var id = 'pres-mermaid-' + Date.now() + '-' + (n++);
         return new Promise(function (resolve) {
           try {
             mermaid.render(id, src, function (svgCode) {
+              /* mermaid v8 can hand back an "error" SVG via the success
+                 callback instead of throwing. Retry once (transient state
+                 issues do happen), then degrade to plain text — never show
+                 the scary error-bomb graphic in a talk. */
+              if (svgCode.indexOf('Syntax error') !== -1) {
+                if (triesLeft > 0) { resolve(attempt(pre, src, triesLeft - 1)); return; }
+                var fallback = document.createElement('pre');
+                fallback.textContent = src;
+                pre.replaceWith(fallback);
+                resolve();
+                return;
+              }
               var div = document.createElement('div');
               div.className = 'mermaid';
               div.innerHTML = svgCode;
@@ -215,6 +225,9 @@
             resolve();
           }
         });
+      }
+      return Promise.all(blocks.map(function (code) {
+        return attempt(code.parentElement, code.textContent, 1);
       }));
     }
 
