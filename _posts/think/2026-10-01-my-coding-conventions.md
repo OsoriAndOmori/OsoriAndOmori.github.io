@@ -10,7 +10,7 @@ tags: [convention, code-style, readable-code]
 
 ## 아키텍처 & 설계
 
-상세한 내용은 [CLAUDE-CODING-CONVENTION.md](https://github.com/OsoriAndOmori/OsoriAndOmori.github.io/blob/main/CLAUDE-CODING-CONVENTION.md)를 참고하세요.
+상세한 내용은 [CLAUDE-CODING-CONVENTION.md](/CLAUDE-CODING-CONVENTION.md)를 참고하세요.
 
 ### 레이어드 아키텍처를 사용할 것
 
