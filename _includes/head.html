@@ -5,8 +5,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% comment %} 글 front matter 에 `ads: false` 를 넣으면 AdSense 스크립트(자동 광고)를 싣지 않는다. {% endcomment %}
+  {% unless page.ads == false %}
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6746159211291883"
           crossorigin="anonymous"></script>
+  {% endunless %}
   <!-- Allow having a localized datetime different from the appearance language -->
   {% if site.prefer_datetime_locale %}
     <meta name="prefer-datetime-locale" content="{{ site.prefer_datetime_locale }}">
