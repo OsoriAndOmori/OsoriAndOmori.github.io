@@ -1,41 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" width="800" height="350" font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif">
-  <rect width="800" height="350" rx="14" fill="#f6f7fb"/>
-  <g fill="none" stroke="#c9ceda" stroke-width="1">
-    <line x1="266" y1="20" x2="266" y2="330"/>
-    <line x1="533" y1="20" x2="533" y2="330"/>
-  </g>
-
-  <!-- 1: 구 1개 -->
-  <g transform="translate(10,0)">
-    <text x="128" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">① 위성 1개</text>
-    <circle cx="128" cy="150" r="85" fill="#4f7cff" fill-opacity="0.15" stroke="#2b4fc4" stroke-width="2"/>
-    <ellipse cx="128" cy="150" rx="85" ry="24" fill="none" stroke="#2b4fc4" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
-    <circle cx="128" cy="150" r="5" fill="#1f2937"/>
-    <text x="128" y="140" text-anchor="middle" font-size="13" fill="#1f2937">위성 1</text>
-    <line x1="128" y1="150" x2="213" y2="150" stroke="#1f2937" stroke-width="1.5"/>
-    <text x="172" y="168" text-anchor="middle" font-size="12" fill="#1f2937">20,100km</text>
-    <text x="128" y="285" text-anchor="middle" font-size="14" fill="#1f2937">구 표면 어딘가</text>
-    <text x="128" y="306" text-anchor="middle" font-size="12" fill="#4b5563">(후보가 무한히 많음)</text>
-  </g>
-
-  <!-- 2: 구 2개 -> 원 -->
-  <g transform="translate(277,0)">
-    <text x="128" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">② 위성 2개</text>
-    <circle cx="93" cy="150" r="75" fill="#4f7cff" fill-opacity="0.15" stroke="#2b4fc4" stroke-width="2"/>
-    <circle cx="163" cy="150" r="75" fill="#22a06b" fill-opacity="0.15" stroke="#17794f" stroke-width="2"/>
-    <ellipse cx="128" cy="150" rx="22" ry="66" fill="none" stroke="#d9480f" stroke-width="3"/>
-    <circle cx="93" cy="150" r="5" fill="#1f2937"/>
-    <circle cx="163" cy="150" r="5" fill="#1f2937"/>
-    <text x="76" y="140" text-anchor="middle" font-size="12" fill="#1f2937">위성 1</text>
-    <text x="180" y="140" text-anchor="middle" font-size="12" fill="#1f2937">위성 2</text>
-    <text x="128" y="285" text-anchor="middle" font-size="14" fill="#1f2937">두 구가 만나 <tspan fill="#d9480f" font-weight="700">원</tspan>이 됨</text>
-    <text x="128" y="306" text-anchor="middle" font-size="12" fill="#4b5563">(후보가 원 위의 점들로 좁혀짐)</text>
-  </g>
-
-  <!-- 3: 구 3개 -> 점 2개 -->
-  <g transform="translate(544,0)">
-    <text x="128" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">③ 위성 3개</text>
-    <g transform="translate(32,34) scale(0.76)">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 440" width="520" height="440" font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+  <rect width="520" height="440" rx="14" fill="#f6f7fb"/>
+  <text x="260" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">위성 3개의 구가 만나는 곳</text>
+  <g transform="translate(88,10) scale(1.2)">
     <circle cx="93" cy="110" r="66" fill="#4f7cff" fill-opacity="0.13" stroke="#2b4fc4" stroke-width="2"/>
     <circle cx="163" cy="110" r="66" fill="#22a06b" fill-opacity="0.13" stroke="#17794f" stroke-width="2"/>
     <circle cx="128" cy="215" r="90" fill="#f08c00" fill-opacity="0.13" stroke="#b36b00" stroke-width="2"/>
@@ -54,7 +20,6 @@
     <text x="186" y="62" font-size="12" fill="#4b5563">우주 쪽 (버림)</text>
     <line x1="215" y1="67" x2="153" y2="123" stroke="#6b7280" stroke-width="1.2"/>
     </g>
-    <text x="128" y="285" text-anchor="middle" font-size="14" fill="#1f2937">교점은 <tspan fill="#d9480f" font-weight="700">점 두 개</tspan></text>
-    <text x="128" y="306" text-anchor="middle" font-size="12" fill="#4b5563">(하나는 지구 표면, 하나는 우주 쪽)</text>
-  </g>
+  <text x="260" y="400" text-anchor="middle" font-size="15" fill="#1f2937">교점은 <tspan fill="#d9480f" font-weight="700">점 두 개</tspan></text>
+  <text x="260" y="422" text-anchor="middle" font-size="13" fill="#4b5563">(하나는 지구 표면 = 내 위치, 하나는 우주 쪽이라 버림)</text>
 </svg>
