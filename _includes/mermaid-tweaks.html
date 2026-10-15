@@ -1,0 +1,77 @@
+{% comment %}
+  Chirpy 7 mermaid 커스터마이즈 (`mermaid: true` 글에서만 post.html 이 include).
+  1) 저채도 팔레트 + 시퀀스 다이어그램 간격: 테마가 호출하는 mermaid.initialize 에 덮어씌운다.
+  2) 접힌 <details> 안 다이어그램은 처음 열 때 렌더 (display:none 에서 렌더하면 SVG 가 깨진다).
+  (발표 덱 .slides-src 안 다이어그램은 presentation.html 이 따로 처리.)
+{% endcomment %}
+<script>
+  (function () {
+    /* 테마 스크립트(defer)가 변환하기 전에, <details> 안 블록을 테마가 못 보게 이름을 바꿔둔다. */
+    document.querySelectorAll('details code.language-mermaid').forEach(function (c) {
+      c.classList.replace('language-mermaid', 'lazy-mermaid');
+    });
+
+    function mermaidConfig(dark) {
+      var v = dark ? {
+        background: 'transparent',
+        primaryColor: '#2b3340', primaryBorderColor: '#4a5568', primaryTextColor: '#d5dbe3',
+        lineColor: '#8792a2', secondaryColor: '#2b3340', tertiaryColor: '#2b3340', textColor: '#d5dbe3',
+        actorBkg: '#2b3340', actorBorder: '#4a5568', actorTextColor: '#d5dbe3', actorLineColor: '#4a5568',
+        signalColor: '#aab4c3', signalTextColor: '#d5dbe3',
+        labelBoxBkgColor: '#2b3340', labelBoxBorderColor: '#4a5568', labelTextColor: '#d5dbe3',
+        noteBkgColor: '#3a3629', noteBorderColor: '#6b6140', noteTextColor: '#e6e0c8',
+        activationBkgColor: '#2b3340', activationBorderColor: '#4a5568', sequenceNumberColor: '#2b3340'
+      } : {
+        background: 'transparent',
+        primaryColor: '#eef2f8', primaryBorderColor: '#c9d3e1', primaryTextColor: '#2f3a4a',
+        lineColor: '#8a96a8', secondaryColor: '#eef2f8', tertiaryColor: '#eef2f8', textColor: '#2f3a4a',
+        actorBkg: '#eef2f8', actorBorder: '#c9d3e1', actorTextColor: '#2f3a4a', actorLineColor: '#d3dae6',
+        signalColor: '#5d6b80', signalTextColor: '#2f3a4a',
+        labelBoxBkgColor: '#eef2f8', labelBoxBorderColor: '#c9d3e1', labelTextColor: '#2f3a4a',
+        noteBkgColor: '#fbf6e6', noteBorderColor: '#eadfb4', noteTextColor: '#5a5030',
+        activationBkgColor: '#eef2f8', activationBorderColor: '#c9d3e1', sequenceNumberColor: '#eef2f8'
+      };
+      return {
+        theme: 'base',
+        themeVariables: Object.assign({ fontFamily: 'inherit', fontSize: '14px' }, v),
+        sequence: {
+          mirrorActors: false, wrap: true, width: 150, actorMargin: 40,
+          messageMargin: 34, noteMargin: 12, boxMargin: 8, useMaxWidth: true
+        }
+      };
+    }
+
+    /* defer 스크립트(mermaid, 테마)가 모두 실행된 뒤 → 렌더링(window load) 전에 실행된다. */
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof mermaid === 'undefined' || typeof mermaid.initialize !== 'function') return;
+
+      var orig = mermaid.initialize.bind(mermaid);
+      var dark = false;
+      function apply(c) {
+        dark = !!c && c.theme === 'dark';
+        return orig(Object.assign({}, c, mermaidConfig(dark)));
+      }
+      /* 테마 토글 시 테마가 다시 initialize 하므로 항상 우리 설정을 덧씌운다. */
+      mermaid.initialize = apply;
+      apply({ theme: (window.Theme && window.Theme.resolvedTheme === 'dark') ? 'dark' : 'default' });
+
+      document.querySelectorAll('details').forEach(function (d) {
+        d.addEventListener('toggle', function () {
+          if (!d.open) return;
+          var nodes = [];
+          d.querySelectorAll('pre > code.lazy-mermaid').forEach(function (code) {
+            var pre = code.parentElement;
+            var div = document.createElement('pre');
+            div.className = 'mermaid';
+            div.textContent = code.textContent;
+            pre.classList.add('d-none');
+            pre.after(div);
+            code.classList.replace('lazy-mermaid', 'lazy-mermaid-done');
+            nodes.push(div);
+          });
+          if (nodes.length) mermaid.run({ nodes: nodes });
+        });
+      });
+    });
+  })();
+</script>
