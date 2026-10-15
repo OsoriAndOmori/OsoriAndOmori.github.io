@@ -2,7 +2,7 @@
 title: dbcp pool 설정에 관해서
 author: OsoriAndOmori
 date: 2022-01-26 18:00:00 +0900
-categories: [Blogging, Database]
+categories: [Dev, Database]
 tags: [database, dbcp]
 ---
 

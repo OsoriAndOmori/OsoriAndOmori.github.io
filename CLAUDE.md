@@ -14,7 +14,11 @@
 - 경로: `_posts/<주제>/YYYY-MM-DD-<제목>.md` (주제 폴더: `think`, `devOps`, `spring`, `database`, `books`, …).
 - front matter: `title`, `author: OsoriAndOmori`, `date: YYYY-MM-DD HH:MM:SS +0900`,
   `categories: [대분류, 소분류]`, `tags: [소문자, ...]`.
-  - `categories` 첫 항목은 대분류(`Blogging`, `Thinking` 등), 둘째가 소분류.
+  - `categories: [대분류, 소분류]` — 대분류는 아래 4개만 쓴다 (개발수첩 컨셉). 새 소분류는 글이 2개 이상일 때만 만든다. 첫 글자 대문자.
+    - `Dev`: Spring, Database, DevOps, Web, Mobile, Python, CS
+    - `AI`: LLM, RAG, NLP, GPU
+    - `Book`: Tech, Novel, Life (기술은 태그로 찾는다)
+    - `Life`: Mind, Work, Parenting
 - **미래 시각 글은 빌드 안 됨.** KST 기준 이미 지난 시각으로 (`09:00:00 +0900` 무난).
 - 초안은 `_drafts/`에 두고 `--drafts` 옵션으로 미리보기.
 - 다이어그램: front matter에 `mermaid: true` 넣고 ```` ```mermaid ```` 블록 사용. 플래그 없으면 렌더 안 됨.

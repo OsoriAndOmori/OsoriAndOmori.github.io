@@ -3,7 +3,7 @@ title: AWS SAA-C03 (합격) 1편 — 문제은행 결정 키워드 정리
 author: OsoriAndOmori
 date: 2026-07-22 12:00:00 +0900
 last_modified_at: 2026-09-03 12:00:00 +0900
-categories: [Blogging, DevOps]
+categories: [Dev, DevOps]
 tags: [aws, cloud, saa-c03, certification, exam]
 toc: true
 ---

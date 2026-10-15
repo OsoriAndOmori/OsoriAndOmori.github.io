@@ -2,7 +2,7 @@
 title: CustomArgumentResolver 사용법
 author: OsoriAndOmori
 date: 2019-08-01 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-mvc]
 ---
 

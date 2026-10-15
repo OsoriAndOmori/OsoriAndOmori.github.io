@@ -2,7 +2,7 @@
 title: "나의 코딩 컨벤션"
 author: OsoriAndOmori
 date: 2026-10-01 09:00:00 +0900
-categories: [Thinking, Code]
+categories: [Dev, CS]
 tags: [convention, code-style, readable-code]
 ---
 

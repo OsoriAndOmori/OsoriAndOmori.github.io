@@ -2,7 +2,7 @@
 title: Real Mongo DB 요약 (~ing)
 author: OsoriAndOmori
 date: 2022-07-21 18:00:00 +0900
-categories: [Blogging, Book]
+categories: [Book, Tech]
 tags: [database, mongodb]
 ---
 

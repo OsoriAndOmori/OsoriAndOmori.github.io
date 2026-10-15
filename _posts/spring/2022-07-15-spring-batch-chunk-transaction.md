@@ -2,7 +2,7 @@
 title: Spring Batch Chunk Oriented & Transaction
 author: OsoriAndOmori
 date: 2022-07-15 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-batch, transaction]
 ---
 

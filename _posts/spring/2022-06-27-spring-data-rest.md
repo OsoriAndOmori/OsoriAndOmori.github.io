@@ -2,7 +2,7 @@
 title: Spring-data-rest 간단한 정리
 author: OsoriAndOmori
 date: 2022-06-27 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-data, spring-data-rest]
 ---
 

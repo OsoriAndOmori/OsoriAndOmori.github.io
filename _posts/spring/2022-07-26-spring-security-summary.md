@@ -2,7 +2,7 @@
 title: Spring Security 요약 (~ing)
 author: OsoriAndOmori
 date: 2022-07-26 14:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-mvc, spring-security]
 ---
 

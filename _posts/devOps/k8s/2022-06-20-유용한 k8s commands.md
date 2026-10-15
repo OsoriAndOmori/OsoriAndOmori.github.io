@@ -2,7 +2,7 @@
 title: 유용한 k8s command (계속 업데이트)
 author: OsoriAndOmori
 date: 2022-06-20 18:00:00 +0900
-categories: [Blogging, DevOps]
+categories: [Dev, DevOps]
 tags: [k8s, command]
 ---
 

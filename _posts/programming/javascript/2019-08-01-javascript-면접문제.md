@@ -2,7 +2,7 @@
 title: Javascript Front-end 면접문제.
 author: OsoriAndOmori
 date: 2019-08-01 18:00:00 +0900
-categories: [Blogging, Front-end]
+categories: [Dev, Web]
 tags: [javascript, interview]
 ---
 

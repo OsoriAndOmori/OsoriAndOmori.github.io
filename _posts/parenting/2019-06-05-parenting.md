@@ -2,7 +2,7 @@
 title: 3명을 키우고 돌이켜보는 임신과 육아 준비 단계
 author: OsoriAndOmori
 date: 2019-06-05 18:00:00 +0900
-categories: [Thinking, Parenting]
+categories: [Life, Parenting]
 tags: [parenting]
 ---
 

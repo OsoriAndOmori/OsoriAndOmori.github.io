@@ -2,7 +2,7 @@
 title: Spring Framework 간단한 정리 - 알고도 다시 짚자
 author: OsoriAndOmori
 date: 2022-07-09 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring]
 ---
 

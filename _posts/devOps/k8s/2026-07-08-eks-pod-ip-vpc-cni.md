@@ -2,7 +2,7 @@
 title: EKS에서는 Pod도 Subnet IP를 먹는다
 author: OsoriAndOmori
 date: 2026-07-08 08:00:00 +0900
-categories: [Blogging, DevOps]
+categories: [Dev, DevOps]
 tags: [k8s, eks, aws, vpc-cni, subnet]
 ---
 

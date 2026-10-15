@@ -2,7 +2,7 @@
 title: Spring batch Mysql + JdbcCursorReader 사용시 확인할 점
 author: OsoriAndOmori
 date: 2022-07-23 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-batch]
 ---
 

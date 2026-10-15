@@ -2,7 +2,7 @@
 title: Opensearch 가이드 용 문서
 author: OsoriAndOmori
 date: 2025-10-30 12:00:00 +0900
-categories: [Blogging, Database]
+categories: [Dev, Database]
 tags: [database, elasticsearch, sharding, opensearch]
 ---
 

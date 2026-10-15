@@ -2,7 +2,7 @@
 title: Spring batch PagingReader 로 Update & Delete 시 데이터 처리 누락되는 경우
 author: OsoriAndOmori
 date: 2022-07-21 18:00:00 +0900
-categories: [Blogging, Spring]
+categories: [Dev, Spring]
 tags: [spring, spring-batch]
 ---
 

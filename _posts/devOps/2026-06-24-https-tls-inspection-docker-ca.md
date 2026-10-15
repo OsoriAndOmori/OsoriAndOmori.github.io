@@ -2,7 +2,7 @@
 title: HTTPS 와 사내 TLS Inspection, Docker CA 삽질 정리
 author: OsoriAndOmori
 date: 2026-06-24 12:00:00 +0900
-categories: [Blogging, DevOps]
+categories: [Dev, DevOps]
 tags: [https, tls, docker, ca, alpine, npm]
 ---
 
