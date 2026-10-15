@@ -1,25 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 440" width="520" height="440" font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif">
-  <rect width="520" height="440" rx="14" fill="#f6f7fb"/>
-  <text x="260" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">위성 3개의 구가 만나는 곳</text>
-  <g transform="translate(88,10) scale(1.2)">
-    <circle cx="93" cy="110" r="66" fill="#4f7cff" fill-opacity="0.13" stroke="#2b4fc4" stroke-width="2"/>
-    <circle cx="163" cy="110" r="66" fill="#22a06b" fill-opacity="0.13" stroke="#17794f" stroke-width="2"/>
-    <circle cx="128" cy="215" r="90" fill="#f08c00" fill-opacity="0.13" stroke="#b36b00" stroke-width="2"/>
-    <ellipse cx="128" cy="110" rx="22" ry="56" fill="none" stroke="#d9480f" stroke-width="2"/>
-    <circle cx="93" cy="110" r="4" fill="#1f2937"/>
-    <circle cx="163" cy="110" r="4" fill="#1f2937"/>
-    <circle cx="128" cy="215" r="4" fill="#1f2937"/>
-    <text x="72" y="100" text-anchor="middle" font-size="11" fill="#1f2937">위성 1</text>
-    <text x="184" y="100" text-anchor="middle" font-size="11" fill="#1f2937">위성 2</text>
-    <text x="128" y="233" text-anchor="middle" font-size="11" fill="#1f2937">위성 3</text>
-    <!-- 교점 A (내 위치) / B (우주 쪽) -->
-    <circle cx="107" cy="128" r="7" fill="#d9480f" stroke="#fff" stroke-width="2"/>
-    <circle cx="149" cy="128" r="7" fill="#f6f7fb" stroke="#6b7280" stroke-width="2" stroke-dasharray="3 2"/>
-    <text x="16" y="62" font-size="12" font-weight="700" fill="#d9480f">내 위치</text>
-    <line x1="48" y1="66" x2="102" y2="123" stroke="#d9480f" stroke-width="1.2"/>
-    <text x="186" y="62" font-size="12" fill="#4b5563">우주 쪽 (버림)</text>
-    <line x1="215" y1="67" x2="153" y2="123" stroke="#6b7280" stroke-width="1.2"/>
-    </g>
-  <text x="260" y="400" text-anchor="middle" font-size="15" fill="#1f2937">교점은 <tspan fill="#d9480f" font-weight="700">점 두 개</tspan></text>
-  <text x="260" y="422" text-anchor="middle" font-size="13" fill="#4b5563">(하나는 지구 표면 = 내 위치, 하나는 우주 쪽이라 버림)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" width="680" height="440" font-family="-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+  <rect width="680" height="440" rx="14" fill="#f6f7fb"/>
+  <text x="340" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1f2937">위성 3개의 구가 만나는 곳 (옆에서 본 모습)</text>
+
+  <!-- 세 위성이 놓인 평면(옆에서 본 선) -->
+  <line x1="30" y1="230" x2="650" y2="230" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="34" y="222" font-size="12" fill="#4b5563">세 위성이 놓인 평면</text>
+
+  <!-- 구 3개: 모두 A(300,150), B(300,310)를 지난다 -->
+  <circle cx="200" cy="230" r="128.1" fill="#4f7cff" fill-opacity="0.12" stroke="#2b4fc4" stroke-width="2"/>
+  <circle cx="330" cy="230" r="85.4" fill="#22a06b" fill-opacity="0.14" stroke="#17794f" stroke-width="2"/>
+  <circle cx="450" cy="230" r="170" fill="#f08c00" fill-opacity="0.10" stroke="#b36b00" stroke-width="2"/>
+
+  <!-- 위성 -->
+  <g fill="#1f2937">
+    <circle cx="200" cy="230" r="5"/>
+    <circle cx="330" cy="230" r="5"/>
+    <circle cx="450" cy="230" r="5"/>
+  </g>
+  <g font-size="13" fill="#1f2937" text-anchor="middle">
+    <text x="170" y="252">위성 1</text>
+    <text x="345" y="252">위성 2</text>
+    <text x="485" y="252">위성 3</text>
+  </g>
+
+  <!-- 교점 두 개 -->
+  <line x1="300" y1="150" x2="300" y2="310" stroke="#d9480f" stroke-width="1.5" stroke-dasharray="3 4"/>
+  <circle cx="300" cy="150" r="8" fill="#d9480f" stroke="#fff" stroke-width="2"/>
+  <circle cx="300" cy="310" r="8" fill="#f6f7fb" stroke="#6b7280" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="316" y="147" font-size="14" font-weight="700" fill="#d9480f">내 위치 (지구 쪽)</text>
+  <text x="316" y="330" font-size="13" fill="#4b5563">우주 쪽 (버림)</text>
+
+  <text x="340" y="400" text-anchor="middle" font-size="15" fill="#1f2937">세 구가 <tspan fill="#d9480f" font-weight="700">정확히 같은 점 두 개</tspan>에서 만난다</text>
+  <text x="340" y="422" text-anchor="middle" font-size="13" fill="#4b5563">(두 점은 위성 평면을 기준으로 위아래 대칭)</text>
 </svg>
