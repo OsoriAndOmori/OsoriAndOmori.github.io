@@ -3,9 +3,9 @@ title: About Me
 icon: fas fa-info-circle
 order: 4
 ---
-<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start;">
-  <img src="https://user-images.githubusercontent.com/22016317/180900224-a9898dd3-9817-47e8-96f8-16d23b92f32c.png" alt="drawing" style="width: 300px; max-width: 100%; border-radius: 30px"/>
-  <img src="/assets/img/about-guitar.webp" alt="기타와 음표 일러스트" style="width: 300px; max-width: 100%; border-radius: 30px"/>
+<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 1rem;">
+  <img src="https://user-images.githubusercontent.com/22016317/180900224-a9898dd3-9817-47e8-96f8-16d23b92f32c.png" alt="drawing" style="height: 360px; width: auto; max-width: 100%; border-radius: 30px"/>
+  <img src="/assets/img/about-guitar.webp" alt="기타와 음표 일러스트" style="height: 360px; width: auto; max-width: 100%; border-radius: 30px"/>
 </div>
 
 > 웹 & 앱 & Data Eng & AI & Devops 등 개발 하는건 아무거나 좋아하는 개발자이며, <br>
