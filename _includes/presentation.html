@@ -1,7 +1,7 @@
 {% comment %}
   Per-post reader "presentation mode".
   Enable by adding `presentation: true` to a post's front matter.
-  Splits .post-content into slides at each <h2>; keyboard + click navigation.
+  Splits article .content into slides at each <h2>; keyboard + click navigation.
 {% endcomment %}
 <style>
   .pres-launch {
@@ -124,8 +124,15 @@
 
 <script>
   (function () {
+    /* The theme's own mermaid pass converts every code.language-mermaid on
+       the page, including the hidden deck (renders to a broken SVG while
+       display:none). Rename those so the theme skips them; hydrateMermaid()
+       renders them once the overlay is visible. */
+    document.querySelectorAll('.slides-src code.language-mermaid').forEach(function (c) {
+      c.classList.replace('language-mermaid', 'deck-mermaid');
+    });
     var launchBtn = document.getElementById('pres-launch');
-    var src = document.querySelector('.post-content');
+    var src = document.querySelector('article .content');
     if (!launchBtn || !src) return;
 
     var overlay, stage, slidesWrap, countEl, slides = [], idx = 0;
@@ -189,45 +196,32 @@
       return buckets.filter(keepSlide);
     }
 
-    /* mermaid.html skips code blocks inside .slides-src (rendering while
-       display:none produces a broken/tiny SVG). Render them here instead,
-       now that the cloned nodes are about to be shown. */
+    /* Deck mermaid blocks are renamed to .deck-mermaid at load (see top).
+       Render them here, now that the cloned nodes are about to be shown. */
     function hydrateMermaid(root) {
-      var blocks = Array.prototype.slice.call(root.querySelectorAll('pre > code.language-mermaid'));
+      var blocks = Array.prototype.slice.call(root.querySelectorAll('pre > code.deck-mermaid'));
       if (!blocks.length || typeof mermaid === 'undefined' || !mermaid.render) {
         return Promise.resolve();
       }
       var n = 0;
-      function attempt(pre, src, triesLeft) {
+      /* mermaid v11: render() returns a Promise<{svg}> and rejects on a
+         syntax error. Degrade to plain text — never show an error graphic
+         in a talk. */
+      function attempt(pre, src) {
         var id = 'pres-mermaid-' + Date.now() + '-' + (n++);
-        return new Promise(function (resolve) {
-          try {
-            mermaid.render(id, src, function (svgCode) {
-              /* mermaid v8 can hand back an "error" SVG via the success
-                 callback instead of throwing. Retry once (transient state
-                 issues do happen), then degrade to plain text — never show
-                 the scary error-bomb graphic in a talk. */
-              if (svgCode.indexOf('Syntax error') !== -1) {
-                if (triesLeft > 0) { resolve(attempt(pre, src, triesLeft - 1)); return; }
-                var fallback = document.createElement('pre');
-                fallback.textContent = src;
-                pre.replaceWith(fallback);
-                resolve();
-                return;
-              }
-              var div = document.createElement('div');
-              div.className = 'mermaid';
-              div.innerHTML = svgCode;
-              pre.replaceWith(div);
-              resolve();
-            });
-          } catch (e) {
-            resolve();
-          }
+        return Promise.resolve(mermaid.render(id, src)).then(function (res) {
+          var div = document.createElement('div');
+          div.className = 'mermaid';
+          div.innerHTML = res.svg;
+          pre.replaceWith(div);
+        }).catch(function () {
+          var fallback = document.createElement('pre');
+          fallback.textContent = src;
+          pre.replaceWith(fallback);
         });
       }
       return Promise.all(blocks.map(function (code) {
-        return attempt(code.parentElement, code.textContent, 1);
+        return attempt(code.parentElement, code.textContent);
       }));
     }
 
