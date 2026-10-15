@@ -3,7 +3,7 @@ title: Google Cloud Platform GCP 정리
 author: OsoriAndOmori
 date: 2022-07-13 18:00:00 +0900
 categories: [Blogging, DevOps]
-tags: [cloud, gcp, google-cloud-platform]
+tags: [cloud, gcp]
 ---
 
 ### 개요
