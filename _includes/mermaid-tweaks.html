@@ -6,6 +6,28 @@
 {% endcomment %}
 <style>
   pre.mermaid { font-family: inherit; }
+
+  /* 둥글고 여유 있는 룩앤필 */
+  .mermaid svg .node rect,
+  .mermaid svg .node polygon { rx: 14px; ry: 14px; stroke-width: 1.3px; }
+  .mermaid svg .node rect,
+  .mermaid svg .node circle,
+  .mermaid svg .node polygon,
+  .mermaid svg .node path { filter: drop-shadow(0 2px 4px rgba(60, 80, 110, 0.14)); }
+  .mermaid svg .cluster rect { rx: 18px; ry: 18px; stroke-width: 1.2px; }
+  .mermaid svg .edgePaths path,
+  .mermaid svg .flowchart-link { stroke-width: 1.6px; stroke-linecap: round; }
+  .mermaid svg .edgeLabel,
+  .mermaid svg .edgeLabel p,
+  .mermaid svg .edgeLabel span { border-radius: 8px; }
+  .mermaid svg .edgeLabel .labelBkg,
+  .mermaid svg .edgeLabel p { padding: 2px 8px; }
+  /* 시퀀스 다이어그램 */
+  .mermaid svg rect.actor { rx: 14px; ry: 14px; stroke-width: 1.3px; filter: drop-shadow(0 2px 4px rgba(60, 80, 110, 0.14)); }
+  .mermaid svg rect.note { rx: 10px; ry: 10px; }
+  .mermaid svg .labelBox { rx: 8px; ry: 8px; }
+  .mermaid svg .messageLine0,
+  .mermaid svg .messageLine1 { stroke-width: 1.6px; }
 </style>
 <script>
   (function () {
@@ -43,9 +65,13 @@
       return {
         theme: 'base',
         themeVariables: Object.assign({ fontFamily: bodyFont(), fontSize: '14px' }, v),
+        flowchart: {
+          padding: 20, nodeSpacing: 40, rankSpacing: 48,
+          curve: 'basis', htmlLabels: true, useMaxWidth: true
+        },
         sequence: {
-          mirrorActors: false, wrap: true, width: 150, actorMargin: 40,
-          messageMargin: 34, noteMargin: 12, boxMargin: 8, useMaxWidth: true
+          mirrorActors: false, wrap: true, width: 170, height: 48, actorMargin: 56,
+          messageMargin: 40, noteMargin: 14, boxMargin: 10, boxTextMargin: 6, useMaxWidth: true
         }
       };
     }
