@@ -3,7 +3,7 @@
 **Chirpy** 테마(v7.6, gem 방식 — chirpy-starter 구조) 기반 Jekyll 블로그. GitHub Actions → GitHub Pages 배포. 글은 한국어.
 
 테마 파일(`_layouts`/`_includes`/`_sass`/`assets/js`)은 gem이 제공한다. 레포에는 오버라이드만 둔다:
-`_layouts/post.html`(발표 모드 버튼 삽입), `_includes/presentation.html`. 업데이트는 `bundle update jekyll-theme-chirpy`.
+`_layouts/post.html`(발표 모드 버튼 삽입), `_includes/presentation.html`, `_includes/sidebar.html`(메뉴 맨 밑 부케 블로그 새창 링크). 업데이트는 `bundle update jekyll-theme-chirpy`.
 오버라이드한 파일은 테마 업데이트 시 gem의 원본과 diff 해서 다시 맞춰야 한다.
 
 > CLAUDE.md 자체는 매 요청 컨텍스트에 100% 들어간다. 여기엔 "매번 필요한 규칙"만 짧게 두고,
