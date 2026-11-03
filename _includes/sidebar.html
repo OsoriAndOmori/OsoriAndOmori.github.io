@@ -35,14 +35,6 @@
             <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
           </a>
         </li>
-        <!-- .nav-item -->
-      {% endfor %}
-        {%- comment -%} 커스텀: 부케 블로그 새창 링크 (테마 업데이트 시 gem 원본과 diff) {%- endcomment -%}
-        <li class="nav-item">
-          <a href="https://osori-workbench.github.io/" class="nav-link" target="_blank" rel="noopener noreferrer">
-            <i class="fa-fw fas fa-external-link-alt"></i>
-            <span>부케 블로그</span>
-          </a>
         </li>
     </ul>
   </nav>
