@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <rect x="0" y="0" width="720" height="560" rx="10" fill="#f7f6f2"/>
+  <text x="360" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#222">엔지니어 평가 기준 — 코드 양이 아니라 임팩트</text>
+
+  <!-- outer box: common -->
+  <rect x="24" y="54" width="672" height="482" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="44" y="82" font-size="15" font-weight="700" fill="#333">공통 정성 기준</text>
+  <text x="44" y="104" font-size="13" fill="#444">· 실용주의적 아키텍처 — 오버엔지니어링 피하고, 비용 대비 효용으로 선택</text>
+  <text x="44" y="126" font-size="13" fill="#444">· 팀 역량 상향 평준화 — 온보딩·코드 리뷰로 팀 전체 이해도 끌어올리기</text>
+
+  <!-- DE box -->
+  <rect x="44" y="148" width="318" height="368" rx="10" fill="#dbe7f3" stroke="#333" stroke-width="1.5"/>
+  <text x="203" y="176" text-anchor="middle" font-size="16" font-weight="700" fill="#222">데이터 엔지니어링 팀</text>
+  <text x="203" y="196" text-anchor="middle" font-size="11.5" fill="#555">키워드: 신뢰성 · 효율성</text>
+
+  <text x="62" y="232" font-size="13.5" font-weight="700" fill="#222">신뢰성 (Reliability)</text>
+  <text x="62" y="252" font-size="12" fill="#333">적재 과정의 장애율을 얼마나 줄였나</text>
+  <text x="62" y="269" font-size="12" fill="#333">지연·결측을 미리 감지해 선제 대응했나</text>
+
+  <text x="62" y="311" font-size="13.5" font-weight="700" fill="#222">비용·성능 (Cost &amp; Performance)</text>
+  <text x="62" y="331" font-size="12" fill="#333">비효율 쿼리·처리 구조 개선으로</text>
+  <text x="62" y="348" font-size="12" fill="#333">인프라 비용을 얼마나 줄였나</text>
+
+  <text x="62" y="390" font-size="13.5" font-weight="700" fill="#222">활용성 (Enablement)</text>
+  <text x="62" y="410" font-size="12" fill="#333">분석가·AI 에이전트가 데이터를</text>
+  <text x="62" y="427" font-size="12" fill="#333">쉽고 빠르게 쓰도록 추상화했나</text>
+
+  <!-- FS box -->
+  <rect x="378" y="148" width="318" height="368" rx="10" fill="#e3efd9" stroke="#333" stroke-width="1.5"/>
+  <text x="537" y="176" text-anchor="middle" font-size="16" font-weight="700" fill="#222">풀스택 엔지니어링 팀</text>
+  <text x="537" y="196" text-anchor="middle" font-size="11.5" fill="#555">키워드: 엔드투엔드 문제 해결</text>
+
+  <text x="396" y="232" font-size="13.5" font-weight="700" fill="#222">E2E 딜리버리</text>
+  <text x="396" y="252" font-size="12" fill="#333">DB → API → UI까지 핑퐁 없이</text>
+  <text x="396" y="269" font-size="12" fill="#333">완결된 가치를 배포했나</text>
+
+  <text x="396" y="311" font-size="13.5" font-weight="700" fill="#222">관측 가능성 (Observability)</text>
+  <text x="396" y="331" font-size="12" fill="#333">로깅·모니터링으로 장애 때</text>
+  <text x="396" y="348" font-size="12" fill="#333">RCA가 바로 되게 만들었나</text>
+
+  <text x="396" y="390" font-size="13.5" font-weight="700" fill="#222">UX·성능</text>
+  <text x="396" y="410" font-size="12" fill="#333">API 응답 속도, 렌더링 최적화 등</text>
+  <text x="396" y="427" font-size="12" fill="#333">사용자가 체감하는 병목을 해결했나</text>
+</svg>
